@@ -56,7 +56,7 @@ Inspired by web deep research, we created a 3-step pipeline:
 
 \begin{table}[t]
 \centering
-\caption{Crash resolution rate (CRR) on the kBenchSyz benchmark ($200$ bugs).
+\caption{Crash Resolution Rate (CRR) on the kBenchSyz benchmark ($200$ bugs).
 }
 \label{tab:rq1-main}
 \vspace*{-2mm}
