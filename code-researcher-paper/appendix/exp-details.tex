@@ -1,0 +1,55 @@
+\section{Experimental setup: additional details} \label{app:details}
+
+\paragraph{Dataset details}
+We use the \kbenchsyz{} dataset containing $279$ instances from \citet{kgym}. The dataset is publicly available at \url{https://github.com/Alex-Mathai-98/kGym-Kernel-Playground} and is under an MIT License.
+We validated the $279$ instances (i.e., the reproducers and the ground-truth fixes), and ruled out $9$ instances for which we could not run the kernel at the parent commit, $27$ for which the kernel at the parent commit did not crash, and $43$ where the kernel still crashed after applying the fix. So, for our experiments, we use the remaining \textbf{200 instances} that we successfully validated. For reproducibility, we use the crash reports generated during our validation instead of the crash reports originally present in \kbenchsyz{}.
+The subset of $200$ instances that we were able to reproduce (containing the bug ids and the crash reports from our reproduction run) is available in the file \texttt{data/kBenchSyz/200\_subset.json} in the supplementary material.
+
+\paragraph{Sampling details}
+In the \synthesisphase{} phase, we ask the agent to generate a hypothesis and patch in the following format.
+It has to write the hypothesis inside \texttt{<hypothesis>} tags and the patch inside \texttt{<patch>} tags.
+The content inside the \texttt{<patch>} tags is a list of \texttt{<symbol>} tags covering all the symbols whose definitions the agent wants to change in its patch.
+With each tag, the agent has to provide \texttt{file, name and start line} attributes and inside each tag, it has to rewrite the complete definition of the symbol (after making the desired changes).
+We use successively higher temperatures ($0$, $0.3$, $0.6$) until the agent gives a correctly formatted patch.
+For o1, since its API does not support a temperature parameter, we sample the desired number of patches by setting the \texttt{n} parameter (number of completions) in the OpenAI Chat Completions API. 
+
+\paragraph{\ffmpeg{} details}
+Please refer to Appendix~\ref{app:ffmpeg} for complete details about our experiments on the \ffmpeg{} dataset.
+
+\paragraph{Crash reproduction setup}
+Our setup for building the Linux kernel and running it on reproducer files is built on top of the \kgym{} platform (MIT Licensed, publicly available at \url{https://github.com/Alex-Mathai-98/kGym-Kernel-Gym}) \citep{kgym} and has a couple of major modifications. First, while \kgym{} runs only on the Google Cloud platform, our setup can run locally on any machine and uses cloud storage for preserving compiled kernels, crash reports, etc. Second, we use \texttt{ccache} \citep{ccache} for caching build files generated during kernel compilation and our own logic for caching \texttt{git checkout}s.
+
+\kgym{} has a distributed setup featuring five workers - \kbuilder{}, \kreproducer{}, \kscheduler{}, \kdashboard{} and \kmq{}. (1)~\kbuilder{} takes as input a source commit, a kernel config, and (optionally) a patch. It checks out the kernel at the source commit, applies the patch, compiles the kernel and uploads the build artifacts (kernel image, vmlinux binary, etc.) to cloud storage. (2)~\kreproducer{} takes as input the build artifacts and a reproducer file and runs the kernel on the reproducer while monitoring for crashes. To handle non-deterministic bugs, we launch $4$ VMs in parallel, each of which runs the reproducer. Each VM further runs multiple processes where system calls can execute in parallel so concurrency bugs can also be reproduced. If any of these VMs crash within $10$ minutes or if \kreproducer{} loses connection to the VMs, we say that the kernel crashes on the reproducer. It then uploads the crash reports to cloud storage. (3)~\kscheduler{} serves an API where we can send reproduction jobs with the source commit, config, reproducer and (optionally) patch. It communicates with \kbuilder{} and \kreproducer{} through the message queue \kmq{} and orchestrates the overall flow of build with \kbuilder{} followed by reproduction with \kreproducer{}. (4)~Finally, \kdashboard{} displays each job's logs and results in a web UI.
+
+\paragraph{KUnit testing details}
+For each of the $116$ crashes resolved by \cresearcher{} (GPT-4o+o1, P@$5$, $15$ \maxcalls{}), we selected one crash-resolving patch and ran KUnit~\citep{kunit} tests on it.
+For $13$ crashes, KUnit was not present in the kernel source code version on which the crash was reported.
+For another $15$ crashes, KUnit was present but did not support the CLI arguments for running tests in QEMU (required as our host kernel is different from the test kernel).
+From the remaining $88$ crashes, all the KUnit tests had a status of either \texttt{PASS} or \texttt{SKIP} (some hardware-specific tests are skipped depending on the machine requirements).
+On average, only $\sim 13$ tests were skipped for a patch while $\sim 210$ tests were passed.
+Due to a bug in the KUnit test-suite at the parent of the fix commit for $4$ crashes, the \texttt{example\_skip\_test} and \texttt{example\_mark\_skipped\_test} tests, which should have been skipped, were run.
+Similarly, for $2$ crashes, due to a bug in KUnit\footnote{See \url{https://groups.google.com/g/kunit-dev/c/ahWFBJsIA2U} and \url{https://www.spinics.net/lists/kernel/msg5128827.html}.}, \texttt{hw\_breakpoint} tests, that should have been skipped, were run.
+We ignore the results of these tests as they are not relevant to the correctness of the patches being tested.
+
+\paragraph{Compute resources}
+We setup $10$ replicas of the distributed setup (containing $5$ workers) described above.
+Each machine was equipped with an AMD EPYC 7V13 Processor running at $2.50$ GHz, had $24$ cores and $220$ GB RAM.
+For one evaluation run on our dataset of $200$ instances for any tool in the P@$5$ setting (i.e., for evaluating $1000$ patches on whether they prevent a crash or not), we divided the instances among the $10$ replicas, and the overall time ranged from $10$ to $15$ hours.
+
+\paragraph{\cresearcher{} Prompts}
+The system and user prompts for the \analysisphase{} and \synthesisphase{} phases (for both filtering and patch generation) are provided in the \texttt{prompts} folder of our supplementary material. They use a \texttt{prompt\_preamble} and \texttt{prompt\_analysis\_examples} that vary based on the codebase (e.g., Linux kernel or FFmpeg). Those can be found in the files \texttt{config/kBenchSyz.yaml} and \texttt{config/ffmpeg.yaml} respectively in our supplementary material.
+
+\paragraph{SWE-agent details}
+We use SWE-agent~\citep{yang2024sweagentagentcomputerinterfacesenable} as one of our baselines. The codebase is publicly available at \url{https://github.com/SWE-agent/SWE-agent/tree/main} and is under the MIT License. We use version $1.0.1$ of SWE-agent, and add a Linux kernel-specific example trajectory and background about the Linux kernel to its prompts.
+We provide the complete configuration file (including all prompts and the example trajectory) in the \texttt{SWE-agent} folder of our supplementary material.
+
+\paragraph{Agentless details}
+We adopt Agentless~\citep{xia2024agentlessdemystifyingllmbasedsoftware} as one of our baselines. The codebase is publicly available at \url{https://github.com/OpenAutoCoder/Agentless} and is under MIT License. The default Agentless pipeline consists of the following steps: (i) retrieval of two sets of relevant files (via an LLM and via embeddings), (ii) identification of candidate edit locations, (iii) generation of multiple patch candidates, and (iv) ranking of patches using test executions.
+In our implementation, we fix the temperature at $0.1$ for all stages of the pipeline and sample $5$ candidate patches in the third stage of patch generation.
+For scalability reasons, we omit the embedding-based retrieval step and ranking is immaterial in our setting since we use Pass@$5$.
+Although the original implementation could not be directly reused, since it is designed specifically for Python codebases, we reimplemented the stages of the pipeline for our usecase, incorporating kernel-specific prompts at each step.
+
+\textbf{Rationale for omitting embedding-based retrieval}
+To estimate the computational overhead, we randomly sampled $1,000$ \texttt{.c} and \texttt{.h} files from the Linux kernel and computed the average number of chunks per file. Extrapolating to the entire codebase, we estimate approximately $781,889$ chunks. With the \texttt{text-embedding-3-small} model (used by Agentless), each embedding call requires on average $\sim 0.5$ seconds. This implies a total embedding time of roughly $108$ hours for a single kernel snapshot, making this step infeasible in our setting. 
+
+All prompts used for the Agentless stages in our experiments are included in the \texttt{Agentless} folder of the supplementary material.

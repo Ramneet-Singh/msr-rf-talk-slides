@@ -1,0 +1,35 @@
+\subsection{RQ2: Do the tool-edited files match those modified in developer fixes?}%
+\label{sec:rq2}
+
+The information needed by a developer to fix a crash can be divided into (1) the code to be edited and (2) additional context. We study (1) here by examining whether tools edit the same files as developers, and study (2) in the next section. Since buggy files are already provided in the assisted setting, we focus on the stack context and unassisted settings. Full results appear in Table~\ref{tab:rq2-main}. 
+
+\begin{table}[t]
+\centering
+\caption{Average recall and All/Any/None percentages (metrics defined in Section~\ref{sec:experiments}) for different tools. LLMs used by the tools are in parentheses.}
+\label{tab:rq2-main}
+\begin{tabular}{@{}c@{}ccccc@{}}
+\cmidrule{1-6}
+\textbf{Setting} & \textbf{Tool} & \makecell{\textbf{Max} \\ \textbf{calls}} & \textbf{P@k} & \makecell{\textbf{Avg.}\\\textbf{Recall}} & \makecell{\textbf{All/Any/None} \\ \textbf{(\%)}} \\
+\cmidrule{1-6}
+\multirow{2}{*}{\rotatebox[origin=c]{0}{\centering Stack context}}
+& GPT-4o & $1$ & P@$5$  & $\mathbf{0.46}$ & $\mathbf{42.5}/7.8/49.7$ \\
+& o1 & $1$ & P@$5$  & ${0.43}$ & $39.7/7.7/52.6$ \\
+\cmidrule{1-6}
+\multirow{3}{*}{\rotatebox[origin=c]{0}{\centering Unassisted}} 
+  & Agentless (GPT-4o) & $4$ & P@$5$ & $0.49$ & $46.4 / 7.7 / 45.9$ \\
+  & SWE-agent (GPT-4o) & $15$ & P@$5$ & $0.37$ & $35.1/5.6/59.3$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $15$ & P@$5$ & $0.51$ & $48.2 / 7.8 / 44.0$ \\
+   & \textbf{\cresearcher{} (GPT-4o + o1)} & $15$ & P@$5$  & $0.53$ & $49.9/7.6/42.4$ \\
+       &\textbf{\cresearcher{} (Gemini 2.5-Flash)} & $15$ & P@$5$  & $\mathbf{0.56}$ & $\mathbf{52.1}/9.7/38.2$ \\
+\cmidrule{1-6}
+\multirow{4}{*}{\rotatebox[origin=c]{0}{\centering \makecell{Unassisted \\ + Scaled} }} 
+  & SWE-agent (GPT-4o) & $30$ & P@$5$  & $0.40$ & $37.9/6.4/55.7$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $30$ & P@$5$  & $\mathbf{0.53}$ & $\mathbf{49.5}/8.0/42.5$ \\
+  & SWE-agent (GPT-4o) & $15$ & P@$10$ & $0.36$ & $34.3/5.5/60.2$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $15$ & P@$10$  & $0.51$ & $47.8/7.5/44.7$ \\
+\cmidrule{1-6}
+\end{tabular}
+\end{table}
+
+\textbf{\cresearcher{} achieves the highest recall across all baselines}, editing all ground-truth buggy files in nearly half of candidate patches and at least one in another $\sim8\%$. ``Recall'' here measures the fraction of ground-truth files in those \emph{edited}, not merely \emph{explored}, making it notable that \cresearcher{} edits on average only $1.1$ files while exploring $10$ (Section~\ref{sec:rq3}). Agentless attains recall comparable to \cresearcher{} and much higher than SWE-agent, but resolves far fewer crashes. \textbf{This contrast underscores the importance of the global context gathered by \cresearcher{}, beyond just the code being edited.}
+Finally, scaling test-time compute (via increasing \maxcalls{} or P@$k$) for \cresearcher{} and SWE-agent preserves the overlap between edited and ground-truth files, and using the newer Gemini 2.5-Flash for \cresearcher{} further improves its overlap.

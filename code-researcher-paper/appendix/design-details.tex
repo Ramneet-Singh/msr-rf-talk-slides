@@ -1,0 +1,31 @@
+\section{\cresearcher{} implementation details} \label{app:design}
+
+The full implementation can be found in the \texttt{cresearcher} folder in the supplementary material. We explain a few key points here.
+
+\paragraph{Context memory}
+\cresearcher{} stores all the context collected so far in a context memory. The memory contains a mapping of file path to a list of symbol definitions (further containing fields like symbol name, start position, end position, body, etc.). It also has search queries and results, storing a list of (query, results) pairs where results is itself a list of results. Please see the definition of the \texttt{class GlobalCtxAgentState} in the file \texttt{cresearcher/utils/types.py} in our supplementary material. In Figure~\ref{fig:complete_example_crash_report_step1} (Appendix~\ref{app:examples}), the context shown provides an example of the memory.
+We use the memory to form the prompt for each step. 
+
+
+\paragraph{Prompts}
+The system and user prompts for the \analysisphase{} and \synthesisphase{} phases (for both filtering and patch generation) are provided in the \texttt{prompts} folder of our supplementary material. They use a \texttt{prompt\_preamble} and \texttt{prompt\_analysis\_examples} that vary based on the codebase (e.g., Linux kernel or FFmpeg). Those can be found in the files \texttt{config/kBenchSyz.yaml} and \texttt{config/ffmpeg.yaml} respectively in our supplementary material.
+We use the context memory to form the prompt for each step. We show all the open symbol definitions (results of \texttt{search\_definition} actions), however we only show the results of queries (\texttt{search\_code} and \texttt{search\_commits}) from the previous step instead of showing them for all past steps. This is because the results of these queries typically have lower signal to noise ratio and commits can be quite large so they threaten to overwhelm the context. The conversation trajectory is also passed to the LLM, but in case it exceeds our limit of $50K$, we remove intermediate messages as necessary (i.e., the first message containing the crash report and the last message are always kept, and intermediate messages are included as much as possible).
+In the filtering step (please see \texttt{generateGlobalCtxAgentSelectionPrompt} in \texttt{cresearcher/globalContext.py} in the supplementary), we prioritize fitting symbol definitions first before we try fitting other search queries and results into our context length limit.
+
+\paragraph{Implementation of the search actions}
+We implement the \texttt{search\_definition(sym)} action using the \texttt{ctags}~\citep{ctags} tool to generate (and read) an index file of language objects found in source files for programming languages.
+The index file is constructed once at the start of \cresearcher{}'s run, usually taking a few minutes for the Linux kernel codebase, and is used throughout the \analysisphase{} trajectory.
+Whenever we show a symbol definition in the prompt, for each line of code that is mentioned in the crash report, we additionally add an annotation (as a C-style comment at the end of the line) saying that this line is important.
+For \texttt{search\_code(regex)}, we use the \texttt{git grep -E} command to search over all the tracked files in the codebase and show $2$ lines of context before and after each matching line.
+Finally, for \texttt{search\_commits(regex)}, we use the \texttt{git log -E -G} and \texttt{git log -E --grep} commands to search over historical commits matching in the code changes and commit messages, respectively.
+The message and patch of each relevant commit are returned as output, truncated to a maximum of $100$ lines.
+Each action can return a maximum of $5$ results.
+To make these searches over an extremely large repository faster, we progressively search over the files of the symbol definitions present in context memory, then those mentioned in the crash report, then those in the kernel subsystems of the bug, and finally all the files in the codebase.
+This prioritization strategy allows us to use a timeout of $60$ seconds for the \texttt{git log} commands (which usually take the longest time) while still getting relevant results in a large number of cases.
+
+\paragraph{Scalability of search tooling}
+We now give some experimental evidence to substantiate our point in Section~\ref{sec:related} that existing coding agents that construct repository dependency graphs, like LocAgent~\citep{locagent}, RepoGraph~\citep{repograph} and Lingma Agent~\citep{lingma}, scale poorly to large codebases.
+
+We ran the LocAgent and RepoGraph graph constructions for the \texttt{sympy} repository from SWE-bench that contains $\sim 433 K$ lines of Python code. LocAgent took $764$ seconds. RepoGraph errored out after $44.3$ seconds and the progress bar showed \texttt{20/1584 [00:24<31:42, 1.22s/it]}, indicating that it would have taken another $30$ minutes to complete. In contrast, constructing the \texttt{ctags} index used by \cresearcher{} doesn't require any dependency analysis and took 0.76 seconds for the same repository.
+
+Given the times above and the fact that the Linux kernel has $\sim 28 M$ lines of code, even if one were to change their tools to support multiple languages, it would be infeasible to construct dependency graphs in reasonable time. On the other hand, constructing the \texttt{ctags} index for the Linux kernel takes only $74$ seconds.

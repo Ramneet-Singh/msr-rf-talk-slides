@@ -1,0 +1,16 @@
+\section{LLM-as-Judge evaluation of overlap between developer commit and tool-gathered context}
+\label{app:llm-as-judge}
+We use LLM-as-judge to analyze the context gathered by \cresearcher{} and SWE-agent to determine the overlap of context in their trajectory with the context mentioned by the developer in the ground-truth fix commit message. We first identify code symbols mentioned in the commit message for a given bug $b$, which we denote as $s^*_{b}$. Then for each candidate patch $i$, we find the overlap of $s^*_b$ with the symbols whose definitions are seen in its trajectory. We denote this overlap by $s_{b, i}$. We define symbol ratio $SR$ for each candidate patch as $$SR_{b,i} = \frac{ |s_{b,i}|}{|s^*_{b}|} .$$
+We consider patch $i$ to have overlapping symbol context with the developer commit if $SR_{b,i} \ge 0.33$. We label all candidate patches with this criterion. As mentioned in Section~\ref{sec:rq3} (2), we find that SWE-agent has $54.18\%$ overlapping symbol context patches, while \cresearcher{} has $63.7\%$ overlapping symbol context patches. This indicates that \cresearcher{} is more effective at identifying relevant context. 
+
+Additionally, we also measure the impact of finding relevant context on the crash resolution rate (CRR) as:
+$$P(\text{patch resolves crash} \;|\; \text{overlapping symbol context}) = 0.309, $$
+$$P(\text{patch resolves crash} \;|\; \text{non-overlapping symbol context}) = 0.116.$$
+This suggests that patches with overlapping symbol context have a significantly higher probability of resolving crashes than patches without. 
+
+In addition to symbols, we also identify commit IDs mentioned in the commit message for a given bug $b$ which we denote as $c^*_b$. Then for each candidate patch $i$, we find the overlap of $c^*_b$ with the commits retrieved in its trajectory, denoted as $c_{b,i}$.
+We note that $c^*_b$ is typically a small number, with a maximum value of $3$ in our dataset of $200$ bugs.
+Therefore, instead of a ratio, we label patch $i$ to have overlapping commit context when all the commits in $c^*_b$ are present in $c_{b,i}$ (i.e., $\frac{|c_{b,i}|}{|c^*_b|} = 1$).
+We find that $30.8\%$ of patches produced by \cresearcher{} have overlapping commit context (recall that SWE-agent does not search over commit IDs). Further, we find that overlapping commit context also has a positive impact on CRR: $$P(\text{patch resolves crash} \;|\; \text{overlapping commit context}) = 0.315,$$ $$P(\text{patch resolves crash} \;|  \text{ non-overlapping commit context}) = 0.205.$$
+
+Overall, these results bring out the utility of effective context retrieval.

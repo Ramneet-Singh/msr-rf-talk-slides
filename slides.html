@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>From a PL Guy to an AI Bro — Ramneet Singh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --panel: #ffffff;
+    --ink: #111827;
+    --muted: #4b5563;
+    --soft: #6b7280;
+    --rule: #e5e7eb;
+    --accent: #2563eb;
+    --soft-bg: #f3f4f6;
+    --shadow: 0 14px 38px rgba(17, 24, 39, 0.08);
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  #stage {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  #deck {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1280px;
+    height: 720px;
+    transform-origin: center center;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 56px 80px 64px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  h1, h2, h3 { margin: 0 0 0.5em; letter-spacing: -0.01em; }
+  h1 { font-size: 56px; font-weight: 700; }
+  h2 { font-size: 40px; font-weight: 700; }
+  h3 { font-size: 26px; font-weight: 600; color: var(--muted); }
+
+  p, li { font-size: 24px; line-height: 1.45; color: var(--ink); }
+  ul { padding-left: 1.2em; margin: 0.4em 0; }
+  ul ul { margin: 0.3em 0 0.4em; }
+  ol { padding-left: 1.4em; margin: 0.4em 0; }
+  li { margin: 0.35em 0; }
+  li::marker { color: var(--accent); }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+
+  img, embed, object {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 8px auto;
+    background: #fff;
+  }
+
+  figure {
+    margin: 8px auto 12px;
+    text-align: center;
+  }
+  figure img, figure embed, figure object {
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 16px;
+    color: var(--soft);
+    font-style: italic;
+  }
+
+  code, pre {
+    font-family: var(--mono);
+    background: var(--soft-bg);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+  }
+  code { padding: 1px 6px; font-size: 0.92em; }
+  pre  { padding: 14px 16px; font-size: 20px; line-height: 1.4; overflow: auto; }
+
+  table {
+    border-collapse: collapse;
+    margin: 12px auto;
+    font-size: 18px;
+    width: 100%;
+  }
+  thead th {
+    text-align: left;
+    border-bottom: 2px solid var(--ink);
+    padding: 8px 10px;
+    font-weight: 700;
+  }
+  tbody td, tbody th {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+  }
+  tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr.group-head th {
+    background: var(--soft-bg);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  caption {
+    caption-side: top;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0 0 6px;
+    font-size: 15px;
+  }
+  .strong { font-weight: 700; }
+  tbody tr.tint-green td, tbody tr.tint-green th { background: #ecfdf5; }
+  tbody tr.tint-purple td, tbody tr.tint-purple th { background: #f5f3ff; }
+  tbody tr.group-sep td, tbody tr.group-sep th { border-top: 1px solid var(--ink); }
+
+  .box {
+    margin: 14px 0;
+    padding: 14px 18px;
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    background: var(--soft-bg);
+  }
+  .box .box-title {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+  .box p { font-size: 22px; margin: 0; color: var(--ink); }
+
+  .greyed { color: var(--soft); font-style: italic; }
+
+  /* Title slide */
+  .title {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 18px;
+    padding: 80px;
+  }
+  .title h1 { font-size: 78px; line-height: 1.05; margin: 0; }
+  .title .author { margin-top: 36px; font-size: 30px; color: var(--ink); }
+  .title .meta {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .title .meta span + span::before {
+    content: "·";
+    margin-right: 14px;
+    color: var(--soft);
+  }
+
+  /* Thanks slide */
+  .thanks {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .thanks h1 { font-size: 96px; }
+
+  /* Fragments */
+  .reveal { opacity: 0; transition: opacity 180ms ease; }
+  .reveal.shown { opacity: 1; }
+  li.reveal { visibility: hidden; opacity: 0; }
+  li.reveal.shown { visibility: visible; opacity: 1; }
+
+  .chrome {
+    position: fixed;
+    left: 0; right: 0; bottom: 12px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 20px;
+    color: var(--soft);
+    font-size: 13px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .chrome .page { font-variant-numeric: tabular-nums; }
+
+  @media print {
+    body { background: #fff; }
+    #stage { position: static; display: block; }
+    #deck { transform: none !important; width: 100%; height: auto; }
+    .slide {
+      display: flex !important;
+      position: relative; inset: auto;
+      page-break-after: always;
+      box-shadow: none; border-radius: 0; border: none;
+      height: 100vh;
+    }
+    .reveal, li.reveal { opacity: 1 !important; visibility: visible !important; }
+    .chrome { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div id="deck">
+
+    <!-- 1: Title -->
+    <section class="slide title">
+      <h1>From a PL Guy<br/>to an AI Bro</h1>
+      <div class="author">Ramneet Singh</div>
+      <div class="meta">
+        <span>MSR India</span>
+        <span>May 27, 2026</span>
+      </div>
+    </section>
+
+    <!-- 2: Me in College -->
+    <section class="slide">
+      <h2>Me in College</h2>
+      <figure>
+        <img src="images/lambda-cube.png" alt="Barendregt's Lambda Cube" style="width: 980px;" />
+        <figcaption>Barendregt's Lambda Cube</figcaption>
+      </figure>
+      <ul>
+        <li class="reveal">If you know what this is: I'm sorry for your trauma.</li>
+      </ul>
+    </section>
+
+    <!-- 3: At MSR -->
+    <section class="slide">
+      <h2>At MSR</h2>
+      <ul>
+        <li class="reveal">Got into AI with a bias. <em>"At least I'll learn Linux kernel internals."</em></li>
+        <li class="reveal" style="margin-top: 1.2em;">Ended up loving it.</li>
+      </ul>
+    </section>
+
+    <!-- 4: Code Researcher -->
+    <section class="slide">
+      <h2>Code Researcher</h2>
+      <p>An agent that can automatically resolve crashes in the Linux kernel.</p>
+      <ul>
+        <li class="reveal">New SOTA every day on SWE-bench, but gains didn't translate to large systems codebases.</li>
+        <li class="reveal">
+          Challenges:
+          <ul>
+            <li>Iterative edit-and-test approach not feasible (~1h build time)</li>
+            <li>Very large (&gt;75K files, &gt;20M LoC) &amp; complex (concurrency, kernel invariants, etc.)</li>
+            <li>Rich development histories (&gt;1M commits, &gt;20 years, &gt;1K contributors)</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 5: Deep Research Agent for Code -->
+    <section class="slide">
+      <h2>Deep Research Agent for Code</h2>
+      <p>Inspired by web deep research, we created a 3-step pipeline:</p>
+
+      <ol>
+        <li class="reveal">
+          <strong>Analysis:</strong> Start from the crash report, iteratively reason and call tools to gather more context.
+          <ul>
+            <li>3 tools: <code>search_definition(sym)</code>, <code>search_code(regex)</code>, and <code>search_commits(regex)</code>. 3 reasoning strategies.</li>
+            <li>First coding agent to explicitly analyse the historical evolution of the codebase.</li>
+          </ul>
+        </li>
+        <li class="reveal">
+          <strong>Synthesis:</strong> Filter out irrelevant parts of the gathered context, then generate a patch to fix the crash.
+        </li>
+        <li class="reveal">
+          <strong>Validation:</strong> apply the patch and check if the kernel still crashes.
+        </li>
+      </ol>
+    </section>
+
+    <!-- 6: Results (Code Researcher) -->
+    <section class="slide">
+      <h2>Results</h2>
+      <table>
+        <caption>Crash resolution rate (CRR) on the kBenchSyz benchmark (200 bugs).</caption>
+        <thead>
+          <tr>
+            <th>Setting</th>
+            <th>Tool</th>
+            <th>Max calls</th>
+            <th>P@k</th>
+            <th>CRR (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-head"><th colspan="5">Assisted</th></tr>
+          <tr><td></td><td>GPT-4o</td><td>1</td><td>P@5</td><td class="num">36.00</td></tr>
+          <tr><td></td><td>o1</td><td>1</td><td>P@5</td><td class="num">51.00</td></tr>
+          <tr><td></td><td>CrashFixer (Gemini 1.5 Pro-002)</td><td>≥4</td><td>P@16</td><td class="num">49.22</td></tr>
+          <tr><td></td><td>CrashFixer (Gemini 2.5 Pro)</td><td>≥4</td><td>P@16</td><td class="num strong">70.00</td></tr>
+
+          <tr class="group-head"><th colspan="5">Unassisted</th></tr>
+          <tr><td></td><td>Agentless (GPT-4o)</td><td>4</td><td>P@5</td><td class="num">31.00</td></tr>
+          <tr><td></td><td>SWE-agent (GPT-4o)</td><td>15</td><td>P@5</td><td class="num">31.50</td></tr>
+          <tr><td></td><td><strong>Code Researcher (GPT-4o)</strong></td><td>15</td><td>P@5</td><td class="num">48.00</td></tr>
+          <tr><td></td><td><strong>Code Researcher (GPT-4o + o1)</strong></td><td>15</td><td>P@5</td><td class="num">58.00</td></tr>
+          <tr><td></td><td><strong>Code Researcher (Gemini 2.5-Flash)</strong></td><td>15</td><td>P@5</td><td class="num strong">67.00</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Matches or beats the best <em>Assisted</em> setting (files-to-edit given) tools.</li>
+        <li>Outperforms top SWE-bench approaches by a large margin.</li>
+      </ul>
+    </section>
+
+    <!-- 7: Learnings -->
+    <section class="slide">
+      <h2>Learnings</h2>
+      <ul>
+        <li class="reveal">
+          Simple, scalable tooling goes a long way
+          <ul>
+            <li>Just <code>ctags</code>, <code>git log</code> and <code>git grep</code> can solve 67% of kernel crashes!</li>
+          </ul>
+        </li>
+        <li class="reveal">
+          Context, Context, Context, &hellip; (120 times)
+          <ul>
+            <li>Context determines performance ceiling</li>
+            <!-- <li>Includes files to edit <strong>and</strong> additional global context</li> -->
+          </ul>
+        </li>
+        <li class="reveal">
+          Commit history is useful!
+          <ul>
+            <li>~10% drop in performance without it</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 8: End-to-End Verified Code Generation -->
+    <section class="slide" style="justify-content: center;">
+      <figure style="margin: 0 auto;">
+        <img src="images/e2e-verified-code-gen.png" alt="End-to-End Verified Code Generation" style="width: 100%;" />
+      </figure>
+      <p class="greyed" style="text-align: center;">(The title was my idea.)</p>
+    </section>
+
+    <!-- 9: Trusting Code without Reading It -->
+    <section class="slide">
+      <h2>Trusting Code without Reading It</h2>
+      <ul>
+        <li>Everyone's writing code. Is anyone reading it?</li>
+        <li>How do you trust the code then?</li>
+        <li class="reveal">
+          Enter <em>formal verification</em> ✨
+          <ul>
+            <li>Read the specification, let a verifier check the code.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="reveal box">
+        <div class="box-title">End-to-End Verified Code Generation</div>
+        <p>Given your natural language intent, an LLM outputs a formal <strong>specification</strong>, <strong>code</strong>, and a verifier-checked <strong>proof</strong> that the code aligns with the specification.</p>
+      </div>
+    </section>
+
+    <!-- 10: Training Pipeline -->
+    <section class="slide">
+      <h2>Training Pipeline</h2>
+      <figure>
+        <img src="images/flowchart-style-3.svg" alt="VerusLM-4B-Codex training pipeline" style="max-width: 860px; max-height: 360px;" />
+      </figure>
+      <ul>
+        <li>Work with the Verus verifier for Rust.</li>
+        <li>Construct NL descriptions from Verus programs.</li>
+        <li>Use masking modes to teach the model to write spec, code, and proof (and different combinations).</li>
+        <li>SFT stage + RL stage.</li>
+      </ul>
+    </section>
+
+    <!-- 11: Preliminary Results (VerusLM) -->
+    <section class="slide">
+      <h2>Preliminary Results</h2>
+      <table style="font-size: 17px;">
+        <caption>Proof writing, spec writing, and end-to-end verified code generation performance.</caption>
+        <thead>
+          <tr>
+            <th rowspan="2">Model</th>
+            <th colspan="2">VeruSage-Bench (849)</th>
+            <th colspan="3">SpecBench (97)</th>
+            <th colspan="2">VTB-XS (99)</th>
+            <th colspan="2">VerifyThisBench (41)</th>
+          </tr>
+          <tr>
+            <th>Hands-On%</th><th>Plain-Harness%</th>
+            <th>S1%</th><th>S2%</th><th>S3 Score</th>
+            <th>Verified%</th><th>Coherent%</th>
+            <th>Verified%</th><th>Coherent%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="tint-green"><td>Qwen3-4B (Inst.)</td><td class="num">3.30</td><td class="num">1.30</td><td class="num">2.06</td><td class="num">1.03</td><td class="num">0.80</td><td class="num">3.03</td><td class="num">3.03</td><td class="num">0.00</td><td class="num">0.00</td></tr>
+          <tr class="group-sep"><td>PSV-Verus (3B-Inst.)</td><td class="num">0.24</td><td class="num">0.12</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">—</td><td class="num">8.08</td><td class="num">2.02</td><td class="num">0.00</td><td class="num">0.00</td></tr>
+          <tr><td>Qwen-VeruSyn (32B-Inst.)</td><td class="num">14.96</td><td class="num">13.55</td><td class="num">2.06</td><td class="num">2.06</td><td class="num">—</td><td class="num">14.14</td><td class="num">11.11</td><td class="num">7.32</td><td class="num">0.00</td></tr>
+          <tr><td>Kimi-K2.5</td><td class="num strong">41.58</td><td class="num strong">41.22</td><td class="num strong">19.59</td><td class="num strong">9.28</td><td class="num strong">9.68</td><td class="num">43.43</td><td class="num strong">42.42</td><td class="num">2.44</td><td class="num strong">2.44</td></tr>
+          <tr class="tint-purple group-sep"><td><strong>VerusLM-4B-Codex-SFT</strong></td><td class="num">1.30</td><td class="num">9.07</td><td class="num">0.00</td><td class="num">0.00</td><td class="num">—</td><td class="num">6.06</td><td class="num">2.02</td><td class="num">65.85</td><td class="num strong">2.44</td></tr>
+          <tr class="tint-purple"><td><strong>VerusLM-4B-Codex</strong></td><td class="num">7.66</td><td class="num">7.42</td><td class="num">4.12</td><td class="num">0.00</td><td class="num">3</td><td class="num strong">46.46</td><td class="num">5.05</td><td class="num strong">75.61</td><td class="num">0.00</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Still training. Turns out this is quite hard.</li>
+        <li>Match Kimi at end-to-end verified code generation and get decent gains over the base model.</li>
+      </ul>
+    </section>
+
+    <!-- 12: Thank You -->
+    <section class="slide thanks">
+      <h1>Thank You, MSR!</h1>
+    </section>
+
+  </div>
+</div>
+
+<div class="chrome">
+  <span class="page"><span id="cur">1</span> / <span id="tot">1</span></span>
+</div>
+
+<script>
+(() => {
+  const deck    = document.getElementById('deck');
+  const stage   = document.getElementById('stage');
+  const slides  = Array.from(document.querySelectorAll('.slide'));
+  const curEl   = document.getElementById('cur');
+  const totEl   = document.getElementById('tot');
+
+  let i = 0;
+  const reveals = slides.map(s => Array.from(s.querySelectorAll('.reveal')));
+  let r = 0;
+
+  totEl.textContent = slides.length;
+
+  function render() {
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    reveals[i].forEach((el, idx) => el.classList.toggle('shown', idx < r));
+    curEl.textContent = i + 1;
+    const want = '#' + (i + 1);
+    if (location.hash !== want) history.replaceState(null, '', want);
+  }
+
+  function go(n, { resetReveals = true } = {}) {
+    if (n < 0 || n >= slides.length) return;
+    i = n;
+    if (resetReveals) r = 0;
+    render();
+  }
+
+  function next() {
+    if (r < reveals[i].length) { r += 1; render(); return; }
+    if (i < slides.length - 1) go(i + 1);
+  }
+
+  function prev() {
+    if (r > 0) { r -= 1; render(); return; }
+    if (i > 0) { i -= 1; r = reveals[i].length; render(); }
+  }
+
+  function fit() {
+    const pad = 24;
+    const sx = (window.innerWidth  - pad) / 1280;
+    const sy = (window.innerHeight - pad) / 720;
+    const s  = Math.min(sx, sy);
+    deck.style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  window.addEventListener('hashchange', () => {
+    const n = parseInt((location.hash || '#1').slice(1), 10);
+    if (!Number.isNaN(n) && n >= 1 && n <= slides.length) go(n - 1);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'PageDown':
+      case ' ':
+        e.preventDefault(); next(); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); prev(); break;
+      case 'Home':
+        e.preventDefault(); go(0); break;
+      case 'End':
+        e.preventDefault(); go(slides.length - 1); r = reveals[i].length; render(); break;
+      case 'f':
+      case 'F':
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+        break;
+    }
+  });
+
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('a,button,input,textarea,select,embed,object')) return;
+    next();
+  });
+
+  const initial = parseInt((location.hash || '#1').slice(1), 10);
+  if (!Number.isNaN(initial) && initial >= 1 && initial <= slides.length) {
+    go(initial - 1);
+  } else {
+    render();
+  }
+})();
+</script>
+
+</body>
+</html>

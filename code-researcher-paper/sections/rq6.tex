@@ -1,0 +1,7 @@
+\subsection{RQ6: Does \cresearcher{} generalize to other systems codebases?}%
+\label{sec:rq6}
+To demonstrate that \cresearcher{} generalizes with a little effort to other codebases, we experiment with crash resolution in the \ffmpeg{}~\citep{ffmpeg} codebase, a leading open-source multimedia framework. We build a small dataset of $10$ recent security-related crash vulnerabilities (which are assigned the top priority) reported by OSS-Fuzz~\citep{ossfuzz}, an automated fuzzing service for open-source projects. Full details of the codebase, dataset construction, and reproduction steps are given in Appendix~\ref{app:ffmpeg}.
+We run \cresearcher{} with the same core prompts as for the Linux kernel. 
+In the unassisted setting (\analysisphase{} with GPT-4o, \synthesisphase{} with o1, \maxcalls{} = $15$), \cresearcher{} \textbf{resolves $7$ of $10$ crashes} at Pass@$1$. 
+It achieves an \textbf{average recall of $0.78$, editing all the ground-truth files in $7$ crashes and none in $2$} (excluding one case without a known fix). 
+While \ffmpeg{} crashes are typically not as complex as Linux kernel crashes, our results show that \cresearcher{}’s techniques generalize easily and effectively to other systems codebases.

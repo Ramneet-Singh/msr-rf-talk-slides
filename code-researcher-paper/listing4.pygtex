@@ -1,0 +1,62 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/net/qrtr/qrtr.c                         /* developer */}
+\PYG{g+gi}{+++ b/net/qrtr/qrtr.c}
+\PYG{g+gu}{@@ \PYGZhy{}692,23 +692,25 @@ static void qrtr\PYGZus{}port\PYGZus{}remove(struct qrtr\PYGZus{}sock *ipc)}
+\PYG{+w}{ } */
+\PYG{+w}{ }static int qrtr\PYGZus{}port\PYGZus{}assign(struct qrtr\PYGZus{}sock *ipc, int *port)
+\PYG{+w}{ }\PYGZob{}
+\PYG{g+gi}{+	u32 min\PYGZus{}port;}
+\PYG{+w}{ }	int rc;
+
+\PYG{+w}{ }	mutex\PYGZus{}lock(\PYGZam{}qrtr\PYGZus{}port\PYGZus{}lock);
+\PYG{+w}{ }	if (!*port) \PYGZob{}
+\PYG{g+gd}{\PYGZhy{}		rc = idr\PYGZus{}alloc(\PYGZam{}qrtr\PYGZus{}ports, ipc,}
+\PYG{g+gd}{\PYGZhy{}			       QRTR\PYGZus{}MIN\PYGZus{}EPH\PYGZus{}SOCKET, QRTR\PYGZus{}MAX\PYGZus{}EPH\PYGZus{}SOCKET + 1,}
+\PYG{g+gd}{\PYGZhy{}			       GFP\PYGZus{}ATOMIC);}
+\PYG{g+gd}{\PYGZhy{}		if (rc \PYGZgt{}= 0)}
+\PYG{g+gd}{\PYGZhy{}			*port = rc;}
+\PYG{g+gi}{+		min\PYGZus{}port = QRTR\PYGZus{}MIN\PYGZus{}EPH\PYGZus{}SOCKET;}
+\PYG{g+gi}{+		rc = idr\PYGZus{}alloc\PYGZus{}u32(\PYGZam{}qrtr\PYGZus{}ports, ipc, \PYGZam{}min\PYGZus{}port, QRTR\PYGZus{}MAX\PYGZus{}EPH\PYGZus{}SOCKET, GFP\PYGZus{}ATOMIC);}
+\PYG{g+gi}{+		if (!rc)}
+\PYG{g+gi}{+			*port = min\PYGZus{}port;}
+\PYG{+w}{ }	\PYGZcb{} else if (*port \PYGZlt{} QRTR\PYGZus{}MIN\PYGZus{}EPH\PYGZus{}SOCKET \PYGZam{}\PYGZam{} !capable(CAP\PYGZus{}NET\PYGZus{}ADMIN)) \PYGZob{}
+\PYG{+w}{ }		rc = \PYGZhy{}EACCES;
+\PYG{+w}{ }	\PYGZcb{} else if (*port == QRTR\PYGZus{}PORT\PYGZus{}CTRL) \PYGZob{}
+\PYG{g+gd}{\PYGZhy{}		rc = idr\PYGZus{}alloc(\PYGZam{}qrtr\PYGZus{}ports, ipc, 0, 1, GFP\PYGZus{}ATOMIC);}
+\PYG{g+gi}{+		min\PYGZus{}port = 0;}
+\PYG{g+gi}{+		rc = idr\PYGZus{}alloc\PYGZus{}u32(\PYGZam{}qrtr\PYGZus{}ports, ipc, \PYGZam{}min\PYGZus{}port, 0, GFP\PYGZus{}ATOMIC);}
+\PYG{+w}{ }	\PYGZcb{} else \PYGZob{}
+\PYG{g+gd}{\PYGZhy{}		rc = idr\PYGZus{}alloc(\PYGZam{}qrtr\PYGZus{}ports, ipc, *port, *port + 1, GFP\PYGZus{}ATOMIC);}
+\PYG{g+gd}{\PYGZhy{}		if (rc \PYGZgt{}= 0)}
+\PYG{g+gd}{\PYGZhy{}			*port = rc;}
+\PYG{g+gi}{+		min\PYGZus{}port = *port;}
+\PYG{g+gi}{+		rc = idr\PYGZus{}alloc\PYGZus{}u32(\PYGZam{}qrtr\PYGZus{}ports, ipc, \PYGZam{}min\PYGZus{}port, *port, GFP\PYGZus{}ATOMIC);}
+\PYG{g+gi}{+		if (!rc)}
+\PYG{g+gi}{+			*port = min\PYGZus{}port;}
+\PYG{+w}{ }	\PYGZcb{}
+\PYG{+w}{ }	mutex\PYGZus{}unlock(\PYGZam{}qrtr\PYGZus{}port\PYGZus{}lock);
+
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/net/qrtr/qrtr.c                /* generated */}
+\PYG{g+gi}{+++ b/net/qrtr/qrtr.c}
+\PYG{g+gu}{@@ \PYGZhy{}695,7 +695,9 @@ static int qrtr\PYGZus{}port\PYGZus{}assign(struct qrtr\PYGZus{}sock *ipc, int *port)}
+\PYG{+w}{ }	int rc;
+
+\PYG{+w}{ }	mutex\PYGZus{}lock(\PYGZam{}qrtr\PYGZus{}port\PYGZus{}lock);
+\PYG{g+gd}{\PYGZhy{}	if (!*port) \PYGZob{}}
+\PYG{g+gi}{+	if (*port \PYGZlt{} 0) \PYGZob{}}
+\PYG{g+gi}{+		rc = \PYGZhy{}EINVAL;}
+\PYG{g+gi}{+	\PYGZcb{} else if (!*port) \PYGZob{}}
+\PYG{+w}{ }		rc = idr\PYGZus{}alloc(\PYGZam{}qrtr\PYGZus{}ports, ipc,
+\PYG{+w}{ }			       QRTR\PYGZus{}MIN\PYGZus{}EPH\PYGZus{}SOCKET, QRTR\PYGZus{}MAX\PYGZus{}EPH\PYGZus{}SOCKET + 1,
+\PYG{+w}{ }			       GFP\PYGZus{}ATOMIC);
+\PYG{g+gu}{@@ \PYGZhy{}759,6 +761,9 @@ static int \PYGZus{}\PYGZus{}qrtr\PYGZus{}bind(struct socket *sock,}
+\PYG{+w}{ }		return 0;
+
+\PYG{+w}{ }	port = addr\PYGZhy{}\PYGZgt{}sq\PYGZus{}port;
+\PYG{g+gi}{+	if (port \PYGZlt{} 0)}
+\PYG{g+gi}{+		return \PYGZhy{}EINVAL;}
+\PYG{g+gi}{+}
+\PYG{+w}{ }	rc = qrtr\PYGZus{}port\PYGZus{}assign(ipc, \PYGZam{}port);
+\PYG{+w}{ }	if (rc)
+\PYG{+w}{ }		return rc;
+\end{Verbatim}

@@ -1,0 +1,9 @@
+\section{Additional related work: long context reasoning}
+\label{app:long-context}
+
+Support for increasing context length sizes in LLMs has been an active area of research~\citep{google-long-context,longcoder},
+opening up the possibility of feeding the entire repository into an LLM's context and generating a patch. But there are a few complications.
+First, note that the Linux kernel has over $75$K files and $28$ Million lines of code.
+In contrast, state of the art models today (e.g., Gemini 2.5 Pro) support at most $2$M tokens in the context window~\citep{google-long-context-docs,google-long-context-docs-gemini2.5}, roughly corresponding to around $100$K lines of code~\citep{google-long-context-docs}.
+Second, long-context models do not robustly make use of the information in context. They often get ``lost in the middle''~\citep{lost-in-the-middle}, performing highest when relevant information occurs at the beginning or end of the input context, and significantly worse when they must access relevant information in the middle of long contexts.
+\Citet{longicl} found that long-context LLMs struggle with processing long, context-rich sequences and reasoning over multiple pieces of information (which is important for any automated software development task).

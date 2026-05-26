@@ -1,0 +1,26 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/fs/jfs/jfs\PYGZus{}dmap.c                         /* developer */}
+\PYG{g+gi}{+++ b/fs/jfs/jfs\PYGZus{}dmap.c}
+\PYG{g+gu}{@@ \PYGZhy{}193,7 +193,8 @@ int dbMount(struct inode *ipbmap)}
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agwidth = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agwidth);
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agstart = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agstart);
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agl2size);
+\PYG{g+gd}{\PYGZhy{}   if (bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZgt{} L2MAXL2SIZE \PYGZhy{} L2MAXAG) \PYGZob{}}
+\PYG{g+gi}{+   if (bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZgt{} L2MAXL2SIZE \PYGZhy{} L2MAXAG ||}
+\PYG{g+gi}{+       bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZlt{} 0) \PYGZob{}}
+\PYG{+w}{ }       err = \PYGZhy{}EINVAL;
+\PYG{+w}{ }       goto err\PYGZus{}release\PYGZus{}metapage;
+\PYG{+w}{ }   \PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/fs/jfs/jfs\PYGZus{}dmap.c                         /* generated */}
+\PYG{g+gi}{+++ b/fs/jfs/jfs\PYGZus{}dmap.c}
+\PYG{g+gu}{@@ \PYGZhy{}193,7 +193,7 @@ int dbMount(struct inode *ipbmap)}
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agwidth = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agwidth);
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agstart = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agstart);
+\PYG{+w}{ }   bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size = le32\PYGZus{}to\PYGZus{}cpu(dbmp\PYGZus{}le\PYGZhy{}\PYGZgt{}dn\PYGZus{}agl2size);
+\PYG{g+gd}{\PYGZhy{}   if (bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZgt{} L2MAXL2SIZE \PYGZhy{} L2MAXAG) \PYGZob{}}
+\PYG{g+gi}{+   if (bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZlt{} 0 ||  bmp\PYGZhy{}\PYGZgt{}db\PYGZus{}agl2size \PYGZgt{} L2MAXL2SIZE \PYGZhy{} L2MAXAG) \PYGZob{}}
+\PYG{+w}{ }       err = \PYGZhy{}EINVAL;
+\PYG{+w}{ }       goto err\PYGZus{}release\PYGZus{}metapage;
+\PYG{+w}{ }   \PYGZcb{}
+\end{Verbatim}

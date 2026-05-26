@@ -1,0 +1,53 @@
+{
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "iclr2026_conference.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "default.pygstyle"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iclr2026_conference.bbl"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iclr2026_conference.bst"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "iclr2026_conference.pyg"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "listing1.pygtex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "listing2.pygtex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "listing3.pygtex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "listing4.pygtex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "references.bib"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "sections/reproducibility.tex"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2023",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

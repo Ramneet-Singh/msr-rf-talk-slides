@@ -1,0 +1,21 @@
+\subsection{RQ4: How important are historical commit analysis and context filtering?}
+\label{sec:rq4}
+
+
+\noindent\textbf{Commit history analysis}
+\cresearcher{} is the first agent to explicitly leverage the rich development history of codebases.
+In this ablation, we run it without the \texttt{search\_commits} action on the set of $96$ bugs that were successfully resolved by \cresearcher{}~(GPT-4o, Pass@$5$, $15$ \maxcalls{}). 
+Table~\ref{tab:rq4-main} (Appendix~\ref{app:additional-exp}) shows that removing the \texttt{search\_commits} action leads to a $10\%$ drop in the crash resolution rate,
+and decreases the ability to edit the ground-truth modified files.
+This highlights that the \texttt{search\_commits} action plays a crucial role 
+in context gathering and localization.
+Notably, for the example in Appendix~\ref{app:commit-importance}, we also observe that \cresearcher{} navigates to the \emph{same} buggy commit that originally introduced the bug being repaired.
+
+\noindent\textbf{Context filtering}
+As mentioned in Section~\ref{sec:synth}, the \analysisphase{} phase often gathers large amounts of irrelevant context, especially in big codebases like the Linux kernel.
+The \synthesisphase{} phase filters this memory before synthesizing a patch.
+We provide two pieces of evidence for the importance of this filtering.
+First, the average memory length (capped at $50K$) across all \cresearcher{} (GPT-4o, P@$5$, $15$ \maxcalls{}) trajectories  dropped from $21,557$ tokens to $7,797$ tokens after filtering.
+Since irrelevant tokens hurt LLM reasoning, this reduction should help performance.
+Second, in an ablation on $20$ randomly sampled crashes ($10$ resolved, $10$ unresolved), disabling filtering reduced resolved crashes from $10$ to $8$, average recall from $0.41$ to $0.35$, and All/Any/None from $34.0/16.0/50.0$ to $29.0/15.0/56.0$.
+This shows the importance of filtering in \cresearcher{}'s performance.

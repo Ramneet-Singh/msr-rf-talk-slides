@@ -1,0 +1,17 @@
+\subsection{RQ5: How robust are \cresearcher{}'s patches?}
+\label{sec:rq5}
+
+
+\noindent\textbf{Kernel unit tests}
+In addition to extensive testing (for $10$ minutes on $4$ machines with $8$ parallel processes) for crash-resolution per the \kbenchsyz{} setup, we run kernel unit tests to check if the proposed patches break existing functionality.
+For each of the $116$ crashes resolved by \cresearcher{} (GPT-4o+o1, P@$5$, $15$ \maxcalls{}), we selected one crash-resolving patch and ran KUnit~\citep{kunit} tests on it.
+For a total of $28$ crashes, either KUnit was not present in the kernel source code version on which the crash was reported or it did not support the required setup.
+For the remaining $88$ crashes, all the KUnit tests had a status of either \texttt{PASS} or \texttt{SKIP} (some hardware-specific tests are skipped depending on the machine requirements). On average, only $\sim 13$ tests were skipped for a patch while $\sim 210$ tests were passed with \emph{no unit test failures reported}.
+
+\noindent\textbf{Qualitative analysis}
+While perusing the crash-resolving patches, we came across the following types of patches. Examples for each category (with explanations) are in Listings~\ref{lst:jfs_semantic}-\ref{lst:qrtr_misfix}, Appendix~\ref{app:qualexamples}.
+\textbf{(1) Accurate} patches correctly identify and fix the root cause of the crash, closely resembling the developer solution.
+\textbf{(2) Overspecialized} patches successfully prevent the crash but may be overspecialized.
+\textbf{(3) Incomplete} patches correctly identify the problem area and approach, but may not be complete. 
+They provide debugging insights and could accelerate the path to a proper fix.
+\textbf{(4) Inaccurate} patches offer a plausible way to resolve the crash, but differ from the developer fix.

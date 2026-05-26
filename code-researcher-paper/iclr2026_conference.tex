@@ -1,0 +1,173 @@
+
+\documentclass{article}
+\PassOptionsToPackage{x11names}{xcolor}
+\usepackage{iclr2026_conference,times}
+\usepackage[normalem]{ulem}
+
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xspace}
+
+\usepackage{subcaption}
+\usepackage{caption}
+
+\usepackage[pdftex]{graphicx}
+\graphicspath{{images/}}
+\usepackage{rotating}
+
+\usepackage{siunitx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\definecolor{skyhex}{HTML}{4E95D9}
+\definecolor{orangebox}{HTML}{FDE7D0}
+\definecolor{greenbox}{HTML}{D9F2D0}
+\definecolor{bluebox}{HTML}{D4F0EA}
+\definecolor{highlightyellow}{HTML}{FFF59D}
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage[newfloat,frozencache,cachedir=.]{minted}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Listing}
+\usepackage{titletoc}
+\usepackage{fontawesome}
+\lstset{
+  backgroundcolor=\color{blue!10}, 
+  basicstyle=\ttfamily,          
+  frame=none,                    
+  showstringspaces=false,  
+  breaklines=true,
+  keepspaces=true,
+  breakindent=0pt,
+  columns=fullflexible           
+}
+\newtcolorbox{promptbox}[1][]{%
+  colback=blue!10,
+  colframe=blue!30!black,
+  fonttitle=\bfseries,
+  title=#1,
+  sharp corners,
+  breakable,
+  fontupper=\small
+}
+
+\makeatletter
+\setminted{
+  linenos,
+  breaklines,
+  numbersep=5pt,
+  xleftmargin=\dimexpr\@totalleftmargin\relax
+}
+\makeatother
+
+
+\usepackage{verbatim}
+\usepackage{float}
+
+
+\title{\cresearcher{}: Deep Research Agent for\\ Large Systems Code and Commit History}
+
+\author{%
+    Ramneet~Singh\thanks{Equal contribution} \quad Sathvik~Joel\footnotemark[1] \quad Abhav~Mehrotra \quad Nalin~Wadhwa \\ \textbf{Ramakrishna~B~Bairi \quad Aditya~Kanade \quad Nagarajan~Natarajan} \\
+    Microsoft Research \\
+    \texttt{\{ramneet2001,ksjoe30,abhavm1,nalin.wadhwa02\}@gmail.com} \\
+    \texttt{\{ram.bairi,kanadeaditya,nagarajan.natarajan\}@microsoft.com}
+}
+
+
+\newcommand{\cresearcher}{\textsl{Code Researcher}}
+\newcommand{\kbenchsyz}{kBenchSyz}
+\newcommand{\kgym}{\textsl{kGym}}
+\newcommand{\kbuilder}{\textsl{kBuilder}}
+\newcommand{\kreproducer}{\textsl{kReproducer}}
+\newcommand{\kscheduler}{\textsl{kScheduler}}
+\newcommand{\kdashboard}{\textsl{kDashboard}}
+\newcommand{\kmq}{\textsl{kmq}}
+
+\newcommand{\analysisphase}{\textsc{Analysis}\xspace}
+\newcommand{\synthesisphase}{\textsc{Synthesis}\xspace}
+\newcommand{\validationphase}{\textsc{Validation}\xspace}
+\newcommand{\maxcalls}{max calls\xspace}
+\newcommand{\ffmpeg}{FFmpeg\xspace}
+
+\iclrfinalcopy
+\begin{document}
+
+
+\maketitle
+
+\vspace{-0.7cm}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\linewidth]{main-fig.pdf}
+    \caption{\cresearcher{} conducts deep research over code in three phases: (1) Starting with the codebase and crash report as input, the \analysisphase{} phase performs multi-step reasoning about semantics, patterns, and commit history of code. It gathers context in a memory. (2) The \synthesisphase{} phase filters the contents of the memory to keep relevant context and generates a patch. (3) The \validationphase{} phase uses external tools to validate the patch.}
+    \label{fig:design}
+\end{figure}
+
+
+\begin{abstract}
+    Large Language Model (LLM)-based coding agents have shown promising results on coding benchmarks, but their effectiveness on systems code remains underexplored. Due to the size and complexities of systems code, making changes to a systems codebase requires \emph{researching} about many pieces of context, derived from the large codebase and its massive commit history, \emph{before} making changes. Inspired by the recent progress on deep research agents, we design the first deep research agent for code, called \cresearcher{}, and apply it to the problem of generating patches to mitigate crashes reported in systems code. \cresearcher{} performs multi-step reasoning about semantics, patterns, and commit history of code to retrieve all relevant context from the codebase and its commit history. 
+    We evaluate \cresearcher{} on \kbenchsyz{}~\citep{kgym}, a benchmark of Linux kernel crashes, and show that it significantly outperforms strong baselines, achieving a crash-resolution rate (CRR) of $48$\%, compared to $31.5$\% by SWE-agent~\citep{yang2024sweagentagentcomputerinterfacesenable} and $31$\% by Agentless~\citep{xia2024agentlessdemystifyingllmbasedsoftware}, using OpenAI's GPT-4o model.
+    Scaling up sampling budget to $10$ trajectories increases \cresearcher{}'s CRR to $54\%$. \cresearcher{} is also robust to model choices, reaching $67\%$ with the newer Gemini 2.5-Flash model.
+   Through another experiment on an open-source multimedia software, we show the generalizability of \cresearcher{} and also conduct ablations.
+    Our experiments highlight the importance of global context gathering and multi-faceted reasoning for large codebases.
+\end{abstract}
+
+\input{sections/introduction}
+
+\input{sections/relatedWork}
+
+\input{sections/methodology}
+
+\input{sections/experimental_setup}
+
+\input{sections/rq}
+
+\input{sections/rq1}
+
+\input{sections/rq2}
+
+\input{sections/rq3}
+
+\input{sections/rq4}
+
+\input{sections/rq5}
+
+\input{sections/rq6}
+
+\input{sections/conclusions}
+
+\bibliography{references}
+\bibliographystyle{iclr2026_conference}
+
+\newpage
+\appendix
+
+\input{appendix/additional-exp}
+\input{appendix/design-details}
+\input{appendix/examples}
+\input{appendix/ffmpeg}
+\input{appendix/example-figs}
+\input{appendix/long-context}
+\input{appendix/exp-details}
+\input{appendix/commit-importance}
+\input{appendix/llm-as-judge}
+\input{appendix/qualitative_examples}
+
+\end{document}

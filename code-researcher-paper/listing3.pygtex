@@ -1,0 +1,154 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/net/qrtr/ns.c                         /* developer */}
+\PYG{g+gi}{+++ b/net/qrtr/ns.c}
+\PYG{g+gu}{@@ \PYGZhy{}193,12 +193,13 @@ static int announce\PYGZus{}servers(struct sockaddr\PYGZus{}qrtr *sq)}
+\PYG{+w}{ }	struct qrtr\PYGZus{}server *srv;
+\PYG{+w}{ }	struct qrtr\PYGZus{}node *node;
+\PYG{+w}{ }	void \PYGZus{}\PYGZus{}rcu **slot;
+\PYG{g+gd}{\PYGZhy{}	int ret;}
+\PYG{g+gi}{+	int ret = 0;}
+
+\PYG{+w}{ }	node = node\PYGZus{}get(qrtr\PYGZus{}ns.local\PYGZus{}node);
+\PYG{+w}{ }	if (!node)
+\PYG{+w}{ }		return 0;
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock();}
+\PYG{+w}{ }	/* Announce the list of servers registered in this node */
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(slot, \PYGZam{}node\PYGZhy{}\PYGZgt{}servers, \PYGZam{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		srv = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(slot);
+\PYG{g+gu}{@@ \PYGZhy{}206,11 +207,14 @@ static int announce\PYGZus{}servers(struct sockaddr\PYGZus{}qrtr *sq)}
+\PYG{+w}{ }		ret = service\PYGZus{}announce\PYGZus{}new(sq, srv);
+\PYG{+w}{ }		if (ret \PYGZlt{} 0) \PYGZob{}
+\PYG{+w}{ }			pr\PYGZus{}err(\PYGZdq{}failed to announce new service\PYGZbs{}n\PYGZdq{});
+\PYG{g+gd}{\PYGZhy{}			return ret;}
+\PYG{g+gi}{+			goto err\PYGZus{}out;}
+\PYG{+w}{ }		\PYGZcb{}
+\PYG{+w}{ }	\PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}	return 0;}
+\PYG{g+gi}{+err\PYGZus{}out:}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock();}
+\PYG{g+gi}{+}
+\PYG{g+gi}{+	return ret;}
+\PYG{+w}{ }\PYGZcb{}
+
+\PYG{+w}{ }static struct qrtr\PYGZus{}server *server\PYGZus{}add(unsigned int service,
+\PYG{g+gu}{@@ \PYGZhy{}335,7 +339,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}bye(struct sockaddr\PYGZus{}qrtr *from)}
+\PYG{+w}{ }	struct qrtr\PYGZus{}node *node;
+\PYG{+w}{ }	void \PYGZus{}\PYGZus{}rcu **slot;
+\PYG{+w}{ }	struct kvec iv;
+\PYG{g+gd}{\PYGZhy{}	int ret;}
+\PYG{g+gi}{+	int ret = 0;}
+
+\PYG{+w}{ }	iv.iov\PYGZus{}base = \PYGZam{}pkt;
+\PYG{+w}{ }	iv.iov\PYGZus{}len = sizeof(pkt);
+\PYG{g+gu}{@@ \PYGZhy{}344,11 +348,13 @@ static int ctrl\PYGZus{}cmd\PYGZus{}bye(struct sockaddr\PYGZus{}qrtr *from)}
+\PYG{+w}{ }	if (!node)
+\PYG{+w}{ }		return 0;
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock();}
+\PYG{+w}{ }	/* Advertise removal of this client to all servers of remote node */
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(slot, \PYGZam{}node\PYGZhy{}\PYGZgt{}servers, \PYGZam{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		srv = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(slot);
+\PYG{+w}{ }		server\PYGZus{}del(node, srv\PYGZhy{}\PYGZgt{}port);
+\PYG{+w}{ }	\PYGZcb{}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock();}
+
+\PYG{+w}{ }	/* Advertise the removal of this client to all local servers */
+\PYG{+w}{ }	local\PYGZus{}node = node\PYGZus{}get(qrtr\PYGZus{}ns.local\PYGZus{}node);
+\PYG{g+gu}{@@ \PYGZhy{}359,6 +365,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}bye(struct sockaddr\PYGZus{}qrtr *from)}
+\PYG{+w}{ }	pkt.cmd = cpu\PYGZus{}to\PYGZus{}le32(QRTR\PYGZus{}TYPE\PYGZus{}BYE);
+\PYG{+w}{ }	pkt.client.node = cpu\PYGZus{}to\PYGZus{}le32(from\PYGZhy{}\PYGZgt{}sq\PYGZus{}node);
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock();}
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(slot, \PYGZam{}local\PYGZus{}node\PYGZhy{}\PYGZgt{}servers, \PYGZam{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		srv = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(slot);
+
+\PYG{g+gu}{@@ \PYGZhy{}372,11 +379,14 @@ static int ctrl\PYGZus{}cmd\PYGZus{}bye(struct sockaddr\PYGZus{}qrtr *from)}
+\PYG{+w}{ }		ret = kernel\PYGZus{}sendmsg(qrtr\PYGZus{}ns.sock, \PYGZam{}msg, \PYGZam{}iv, 1, sizeof(pkt));
+\PYG{+w}{ }		if (ret \PYGZlt{} 0) \PYGZob{}
+\PYG{+w}{ }			pr\PYGZus{}err(\PYGZdq{}failed to send bye cmd\PYGZbs{}n\PYGZdq{});
+\PYG{g+gd}{\PYGZhy{}			return ret;}
+\PYG{g+gi}{+			goto err\PYGZus{}out;}
+\PYG{+w}{ }		\PYGZcb{}
+\PYG{+w}{ }	\PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}	return 0;}
+\PYG{g+gi}{+err\PYGZus{}out:}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock();}
+\PYG{g+gi}{+}
+\PYG{g+gi}{+	return ret;}
+\PYG{+w}{ }\PYGZcb{}
+
+\PYG{+w}{ }static int ctrl\PYGZus{}cmd\PYGZus{}del\PYGZus{}client(struct sockaddr\PYGZus{}qrtr *from,
+\PYG{g+gu}{@@ \PYGZhy{}394,7 +404,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}del\PYGZus{}client(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }	struct list\PYGZus{}head *li;
+\PYG{+w}{ }	void \PYGZus{}\PYGZus{}rcu **slot;
+\PYG{+w}{ }	struct kvec iv;
+\PYG{g+gd}{\PYGZhy{}	int ret;}
+\PYG{g+gi}{+	int ret = 0;}
+
+\PYG{+w}{ }	iv.iov\PYGZus{}base = \PYGZam{}pkt;
+\PYG{+w}{ }	iv.iov\PYGZus{}len = sizeof(pkt);
+\PYG{g+gu}{@@ \PYGZhy{}434,6 +444,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}del\PYGZus{}client(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }	pkt.client.node = cpu\PYGZus{}to\PYGZus{}le32(node\PYGZus{}id);
+\PYG{+w}{ }	pkt.client.port = cpu\PYGZus{}to\PYGZus{}le32(port);
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock();}
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(slot, \PYGZam{}local\PYGZus{}node\PYGZhy{}\PYGZgt{}servers, \PYGZam{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		srv = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(slot);
+
+\PYG{g+gu}{@@ \PYGZhy{}447,11 +458,14 @@ static int ctrl\PYGZus{}cmd\PYGZus{}del\PYGZus{}client(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }		ret = kernel\PYGZus{}sendmsg(qrtr\PYGZus{}ns.sock, \PYGZam{}msg, \PYGZam{}iv, 1, sizeof(pkt));
+\PYG{+w}{ }		if (ret \PYGZlt{} 0) \PYGZob{}
+\PYG{+w}{ }			pr\PYGZus{}err(\PYGZdq{}failed to send del client cmd\PYGZbs{}n\PYGZdq{});
+\PYG{g+gd}{\PYGZhy{}			return ret;}
+\PYG{g+gi}{+			goto err\PYGZus{}out;}
+\PYG{+w}{ }		\PYGZcb{}
+\PYG{+w}{ }	\PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}	return 0;}
+\PYG{g+gi}{+err\PYGZus{}out:}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock();}
+\PYG{g+gi}{+}
+\PYG{g+gi}{+	return ret;}
+\PYG{+w}{ }\PYGZcb{}
+
+\PYG{+w}{ }static int ctrl\PYGZus{}cmd\PYGZus{}new\PYGZus{}server(struct sockaddr\PYGZus{}qrtr *from,
+\PYG{g+gu}{@@ \PYGZhy{}554,6 +568,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}new\PYGZus{}lookup(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }	filter.service = service;
+\PYG{+w}{ }	filter.instance = instance;
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock();}
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(node\PYGZus{}slot, \PYGZam{}nodes, \PYGZam{}node\PYGZus{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		node = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(node\PYGZus{}slot);
+
+\PYG{g+gu}{@@ \PYGZhy{}568,6 +583,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}new\PYGZus{}lookup(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }			lookup\PYGZus{}notify(from, srv, true);
+\PYG{+w}{ }		\PYGZcb{}
+\PYG{+w}{ }	\PYGZcb{}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock();}
+
+\PYG{+w}{ }	/* Empty notification, to indicate end of listing */
+\PYG{+w}{ }	lookup\PYGZus{}notify(from, NULL, true);
+
+
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/net/qrtr/ns.c                /* generated */}
+\PYG{g+gi}{+++ b/net/qrtr/ns.c}
+\PYG{g+gu}{@@ \PYGZhy{}554,6 +554,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}new\PYGZus{}lookup(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }	filter.service = service;
+\PYG{+w}{ }	filter.instance = instance;
+
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}lock(); // Add RCU read lock}
+\PYG{+w}{ }	radix\PYGZus{}tree\PYGZus{}for\PYGZus{}each\PYGZus{}slot(node\PYGZus{}slot, \PYGZam{}nodes, \PYGZam{}node\PYGZus{}iter, 0) \PYGZob{}
+\PYG{+w}{ }		node = radix\PYGZus{}tree\PYGZus{}deref\PYGZus{}slot(node\PYGZus{}slot);
+
+\PYG{g+gu}{@@ \PYGZhy{}568,6 +569,7 @@ static int ctrl\PYGZus{}cmd\PYGZus{}new\PYGZus{}lookup(struct sockaddr\PYGZus{}qrtr *from,}
+\PYG{+w}{ }			lookup\PYGZus{}notify(from, srv, true);
+\PYG{+w}{ }		\PYGZcb{}
+\PYG{+w}{ }	\PYGZcb{}
+\PYG{g+gi}{+	rcu\PYGZus{}read\PYGZus{}unlock(); // Add RCU read unlock}
+
+\PYG{+w}{ }	/* Empty notification, to indicate end of listing */
+\PYG{+w}{ }	lookup\PYGZus{}notify(from, NULL, true);
+\end{Verbatim}

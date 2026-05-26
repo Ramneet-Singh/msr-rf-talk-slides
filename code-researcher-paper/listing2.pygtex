@@ -1,0 +1,41 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/drivers/bluetooth/hci\PYGZus{}h5.c                /* developer */}
+\PYG{g+gi}{+++ b/drivers/bluetooth/hci\PYGZus{}h5.c}
+\PYG{g+gu}{@@ \PYGZhy{}587,9 +587,11 @@ static int h5\PYGZus{}recv(...)}
+\PYG{+w}{ }   count \PYGZhy{}= processed;
+\PYG{+w}{ }   \PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}get(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}mark\PYGZus{}last\PYGZus{}busy(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}put\PYGZus{}autosuspend(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+   if (hu\PYGZhy{}\PYGZgt{}serdev) \PYGZob{}}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}get(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}mark\PYGZus{}last\PYGZus{}busy(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}put\PYGZus{}autosuspend(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+   \PYGZcb{}}
+
+\PYG{+w}{ }   return 0;
+\PYG{+w}{ }\PYGZcb{}
+
+
+\PYG{g+gd}{\PYGZhy{}\PYGZhy{}\PYGZhy{} a/drivers/bluetooth/hci\PYGZus{}h5.c                /* generated */}
+\PYG{g+gi}{+++ b/drivers/bluetooth/hci\PYGZus{}h5.c}
+\PYG{g+gu}{@@ \PYGZhy{}587,9 +587,14 @@ static int h5\PYGZus{}recv(...)}
+\PYG{+w}{ }		count \PYGZhy{}= processed;
+\PYG{+w}{ }	\PYGZcb{}
+
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}get(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}mark\PYGZus{}last\PYGZus{}busy(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gd}{\PYGZhy{}   pm\PYGZus{}runtime\PYGZus{}put\PYGZus{}autosuspend(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+   if (hu\PYGZhy{}\PYGZgt{}serdev) \PYGZob{}}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}get(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}mark\PYGZus{}last\PYGZus{}busy(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+       pm\PYGZus{}runtime\PYGZus{}put\PYGZus{}autosuspend(\PYGZam{}hu\PYGZhy{}\PYGZgt{}serdev\PYGZhy{}\PYGZgt{}dev);}
+\PYG{g+gi}{+   \PYGZcb{} else \PYGZob{}}
+\PYG{g+gi}{+       bt\PYGZus{}dev\PYGZus{}err(hu\PYGZhy{}\PYGZgt{}hdev, \PYGZdq{}serdev is not initialized\PYGZdq{});}
+\PYG{g+gi}{+       return \PYGZhy{}ENODEV;}
+\PYG{g+gi}{+   \PYGZcb{}}
+
+\PYG{+w}{ }   return 0;
+\PYG{+w}{ }\PYGZcb{}
+\end{Verbatim}

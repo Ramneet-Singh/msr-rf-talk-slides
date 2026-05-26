@@ -1,0 +1,67 @@
+
+\begin{table}[t]
+\centering
+\caption{Crash resolution rate (CRR) for different tools on the \kbenchsyz{} benchmark ($200$ bugs). LLMs used by the tools are in parentheses. $^*$Results are from \citet{crashfixer}, out of $279$ bugs.
+}
+\label{tab:rq1-main}
+\vspace*{-2mm}
+\scalebox{0.95}{
+\begin{tabular}{ccccc}
+\cmidrule{1-5}
+\textbf{Setting} & \textbf{Tool} & \textbf{Max calls}& \textbf{P@k} & \textbf{CRR (\%)} \\
+\cmidrule{1-5}
+\multirow{3}{*}{\rotatebox[origin=c]{0}{\centering Assisted}} 
+  & GPT-4o           & $1$ & P@$5$ & $36.00$ \\
+  & o1                       & $1$ & P@$5$  & $51.00$ \\
+  & CrashFixer~(Gemini 1.5 Pro-002)$^*$ & $\geq 4$ & P@$16$ & $49.22^*$ \\
+  & CrashFixer~(Gemini 2.5 Pro) & $\geq 4$ & P@$16$ & $\mathbf{70.00}$ \\
+\cmidrule{1-5}
+\multirow{2}{*}{\rotatebox[origin=c]{0}{\centering Stack context}} 
+  & GPT-4o & $1$ & P@$5$  & $29.50$ \\
+  & o1 & $1$ & P@$5$  & $\mathbf{40.00}$ \\
+\cmidrule{1-5}
+\multirow{3}{*}{\rotatebox[origin=c]{0}{\centering Unassisted}} 
+  & Agentless (GPT-4o) & $4$ & P@$5$  & $31.00$ \\
+  & SWE-agent (GPT-4o) & $15$ & P@$5$  & $31.50$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $15$ & P@$5$  & $48.00$ \\
+  & \textbf{\cresearcher{} (GPT-4o + o1)} & $15$ & P@$5$  & $58.00$ \\
+  & \textbf{\cresearcher{} (Gemini 2.5-Flash)} & $15$ & P@$5$  & $\mathbf{67.00}$ \\
+\cmidrule{1-5}
+\multirow{4}{*}{\rotatebox[origin=c]{0}{\centering \makecell{Unassisted \\ + Scaled} }} 
+  & SWE-agent (GPT-4o) & $30$ & P@$5$  & $32.00$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $30$ & P@$5$  & $47.50$ \\
+  & SWE-agent (GPT-4o) & $15$ & P@$10$ & $37.50$ \\
+  & \textbf{\cresearcher{} (GPT-4o)} & $15$ & P@$10$  & $\mathbf{54.00}$ \\
+\cmidrule{1-5}
+\end{tabular}
+}
+\end{table}
+
+\subsection{RQ1: How effective are different tools at resolving Linux kernel crashes?}%
+\label{sec:rq1}
+
+Our main results are presented in Table~\ref{tab:rq1-main}, organized by setting, namely, assisted, stack context, unassisted, and unassisted + test-time scaled (Section~\ref{sec:experiments}).
+
+\noindent\textbf{1) The assisted setting baselines show strong performance, but under unrealistic assumptions.}
+Given the ground-truth buggy files, LLMs like GPT-4o (CRR of $36\%$) are quite capable of resolving crashes.
+A reasoning model like o1 is significantly better (CRR of $51\%$).
+Adding iterative feedback from the compiler and the crash reproduction setup, CrashFixer achieves $49.22\%$ CRR with an older Gemini model and $70\%$ CRR with a newer Gemini reasoning model
+using P@$16$ with at least $4$ \maxcalls{}.
+
+\noindent\textbf{2) The stack context setting reveals the difficulty of the practical unassisted setting.}
+The assumption that an oracle can tell us exactly which files need to be edited is impractical.
+The gap between the assisted (idealistic) setting and the practical unassisted setting is highlighted by the simple but effective stack context setting
+where models are given the contents of all the files mentioned in the crash report (truncated to the context length limit).
+This is a strong baseline because all the ground-truth buggy files are present in the crash report for {$74.50\%$} crashes in our dataset.
+o1 achieves a CRR of $40\%$, which is impressive, but $11\%$ lower than its performance in the assisted setting.
+
+\noindent\textbf{3) \cresearcher{} consistently outperforms baselines in the unassisted setting.}
+Fixing the LLM as GPT-4o, \cresearcher{} achieves a CRR of $48\%$, significantly outperforming the SWE-agent and Agentless baselines, both the stack context baselines, and even the assisted GPT-4o baseline.
+This indicates that the context gathered by \cresearcher{} is much more effective than giving file contents based on the crash report, or using multi-step hierarchical localization (as done by Agentless), and is even better than directly giving all the contents of the files to be edited.
+The context gathered by GPT-4o during \analysisphase{} can be better utilized by the reasoning model o1 during \synthesisphase{}, increasing \cresearcher{}'s CRR to $58\%$.
+This further increases to $67\%$ using the newer (albeit not as advanced as Gemini 2.5-Pro) model, Gemini 2.5-Flash, for both phases, indicating that \cresearcher{}'s design is not tied to a specific LLM family.
+
+\noindent\textbf{4) Increasing the number of trajectories helps, while making them longer does not.}
+We examine how scaling the total inference budget (\maxcalls{} $\times$ num trajectories $k$) impacts the performance of \cresearcher{} and SWE-agent.
+Doubling the \maxcalls{} budget, i.e., making the trajectories of the agents longer, has a negligible effect on the CRR, whereas
+increasing the number of trajectories sampled improves SWE-agent's CRR to $37.50\%$ and \cresearcher{} (GPT-4o)'s CRR to $54.00\%$.

@@ -1,0 +1,46 @@
+\section{Design of \cresearcher{}}%
+\label{sec:solution}
+
+Large systems codebases, owing to their critical nature, undergo strict code development and reviewing practices by expert developers. The bugs that still sneak in are subtle and involve violations of global invariants (e.g., a data structure should be accessed only after acquiring a lock) and coding conventions (e.g., use of a specific macro to allocate memory), and unintended side effects caused by past changes. To fix such bugs, an agent needs to gather sufficient context from the codebase and its commit history, before generating hypotheses about the cause of a bug and attempt to fix it. With this insight, we design our deep research agent, \cresearcher{}. As shown in Figure~\ref{fig:design}, \cresearcher{} comprises of three phases: (1) \analysisphase, (2) \synthesisphase and (3) \validationphase.
+We present the key details of our design in this section and complement it with implementation details in Appendix~\ref{app:design}.
+We also explain an example trajectory of \cresearcher{} in Appendix~\ref{app:examples}.
+
+\subsection{\analysisphase phase}
+
+The \analysisphase phase of \cresearcher{} is responsible for performing deep research to understand the cause of a reported crash.
+We equip this phase with (a) actions to efficiently search over the codebase and the commit history and (b) reasoning strategies for code. At each step, the actions taken so far along with their results are stored in a context memory, which is used to construct the prompt.
+
+\subsubsection{Actions to search over codebase and commit history}
+
+We support the following actions: (1) \texttt{search\_definition(sym)}: To search for the definition(s) of the specified symbol, which can be the name of a function, struct, global constant, union or macro and so on. It can be optionally passed a file name to limit the search. (2) \texttt{search\_code(regex)}: To search the codebase for matches to the specified regular expression. This is a simple yet powerful tool, which can be used for searching for any coding pattern such as call to a function, dereferences to a pointer, assignment to a variable and so on. (3) \texttt{search\_commits(regex)}: To search for matches to a regular expression over commit messages and diffs associated with the commits. The regular expression offers expressiveness, e.g., to search for occurrence of a term (``memory leak'') in the commit messages or coding patterns in code changes (diffs). In addition, the agent can invoke (4) \texttt{done} to indicate that it has finished the \analysisphase phase and (5) \texttt{close\_definition(sym)}: To remove the definition of a symbol from the memory if the symbol is deemed irrelevant to the task.
+
+\subsubsection{Reasoning strategies for code}
+
+We ask the agent to explore the codebase to figure out the root cause of a crash and gather sufficient context to propose a fix.
+We induce the following reasoning strategies through prompting to guide the exploration of the codebase and its commit history. As shown in Figure~\ref{fig:design}, each reasoning step is followed by one or more actions.
+Additionally, we present the agent with a simple scratchpad, where it can add important discoveries for future reference.
+
+\noindent\textbf{Chasing control and data flow chains}
+The \emph{control flow}~\citep{nielson2015principles} of a code snippet refers to the functions that are called and the branches in it, including conditional statements, loops, \texttt{goto}s and even conditional compilation macros. Given a crash report and some code, the agent is asked to reason about control flow to understand how execution flows between different functions and how it leads to the crash. Similarly, \emph{data flow}~\citep{nielson2015principles} refers to how the values of variables get passed to different functions and how one variable is used to define another. 
+So the agent should also reason about how data flows in the code. 
+As a result of this reasoning, the agent may invoke a \texttt{search\_definition(sym)} action to search for the definition of \texttt{sym} if it suspects that \texttt{sym} may have something to do with the buggy behavior and needs more information about \texttt{sym} to confirm or dispel the suspicion. It can also use other actions as suitable, e.g., \texttt{search\_code(x\textbackslash{}s*=)} to look for assignments to a variable named \texttt{x}, with \texttt{\textbackslash{}s*} indicating zero or more whitespaces.
+
+\noindent\textbf{Searching for patterns and anti-patterns}
+Traditional software engineering literature thinks of bugs as anomalies -- patterns of code that are deviant~\citep{deviant}. It follows that, to diagnose and understand a bug, one can find frequent patterns in the repository and check if a given piece of code deviates from it. \cresearcher{} reasons about which behavior is common or ``normal'' and which code snippets look anomalous. It can perform a \texttt{search\_code(regex)} action to search for these patterns and anti-patterns using regular expressions. A classic case is checking a pointer for null value after allocation. If the agent notices a missing null check for \texttt{ptr}, it can perform \texttt{search\_code(if\textbackslash{}s*\textbackslash{}(ptr==NULL\textbackslash{}))} to search for null checks throughout the codebase on \texttt{ptr}. Similarly, it can perform \texttt{search\_code(ptr\textbackslash{}s*=.*alloc\textbackslash{}(.*\textbackslash{}))} to search for all allocations to \texttt{ptr} to verify whether other parts of the codebase typically perform a null check or not.
+
+\noindent\textbf{Causal analysis over historical commits}
+An interesting and challenging aspect of a codebase that has been in development for a long time, as many foundational systems codebases have, is the rich history of commits. Because of continuous development, it is likely that a new bug has some past commits that can prove helpful in understanding or solving it. Indeed, developers often reference other commits when they come up with patches.
+\cresearcher{} reasons about how the codebase has evolved and how that evolution is related to the crash report. It can issue a \texttt{search\_commits(regex)} action to search over past commit messages and diffs. 
+For instance, the regular expression \texttt{handle->size|crypto\_fun\textbackslash{}(} matches commits that add or remove a \texttt{handle->size} access, or a call to \texttt{crypto\_fun}.
+
+\noindent\textbf{Iterative process of deep research}
+As shown in Figure~\ref{fig:design}, in each reasoning step, \cresearcher{} is asked to decide if it has acquired sufficient context to understand and solve the crash. If yes, it moves to the next phase of synthesizing the patch (Section~\ref{sec:synth}). Initially, the context is empty and it starts its reasoning process by analyzing the contents of the stack trace and the diagnostic information provided as input. 
+At each step, the agent evaluates the context accrued so far and decides which lines of exploration to extend by issuing multiple search actions simultaneously.
+
+
+\subsection{\synthesisphase and \validationphase phases}
+\label{sec:synth}
+
+The contents of memory and the reasoning trace of the \analysisphase phase are passed to the \synthesisphase phase, along with the crash report. The \analysisphase phase has the flexibility to follow multiple paths of inquiry simultaneously. It can thus end up collecting information that does not turn out to be relevant, which also happens when a human does research on some topic.
+In large codebases, this irrelevant information can be quite large and can overwhelm the prompt.
+Thus, the \synthesisphase phase first filters the memory and discards (action, result) pairs that are deemed irrelevant to the task of fixing the crash. The agent then uses the filtered information to generate a hypothesis about the nature of the bug and a potential remedy, and the corresponding patch. Finally, in the \validationphase phase, the patch is applied to the codebase, and the codebase is compiled. The reproducer program that had originally caused a crash is run. If the crash is reproduced, the patch is rejected. If not, it is accepted.

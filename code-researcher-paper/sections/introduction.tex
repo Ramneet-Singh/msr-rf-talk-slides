@@ -1,0 +1,47 @@
+\section{Introduction}%
+\label{sec:intro}
+
+Automating coding using Large Language Models (LLMs) and LLM-based agents is a very active area of research. Popular benchmarks like LiveCodeBench~\citep{jain2024livecodebench} and SWE-bench~\citep{jimenez2024swebench} respectively test coding abilities on standalone competitive coding problems and GitHub issues over library or application code. Despite the demonstrated progress of coding agents on these benchmarks, they are yet to scale to complex tasks over an important class of code, \textit{systems code}.
+
+Systems code powers critical and foundational software like operating systems, networking stacks, cloud infrastructure and system utilities. Systems codebases have multiple dimensions of complexity.
+Firstly, they are \emph{very large}, with thousands of files and millions of lines of code.
+Secondly, systems code often interfaces directly with the hardware and is performance critical. This results in \emph{complex low-level code} (involving pointer manipulations, compile-time macros, etc.) in languages like C/C++, and \emph{global interactions} between different parts of the codebase for concurrency, memory management, maintenance of data-structure invariants, etc.
+Finally, foundational systems codebases have \emph{rich development histories} spanning years or even decades, containing contributions by thousands of developers, which are important references on legacy design decisions and code changes.
+
+We consider the problem of generating patches to mitigate crashes reported in systems code.
+This is a uniquely challenging setting, as opposed to the SWE-bench~\citep{jimenez2024swebench} like setting tackled by many prior works~\citep{yang2024sweagentagentcomputerinterfacesenable,regym,repograph} using LLMs and SLMs in coding agents.
+SWE-bench contains human-written issue descriptions from moderately-sized codebases, which explain the nature of the bug and might indicate which files are likely relevant.
+Coding agents~\citep{yang2024sweagentagentcomputerinterfacesenable,openhands} are designed to take advantage of this and quickly navigate the repository to reach the buggy files. 
+In fact, an Agentless~\citep{xia2024agentlessdemystifyingllmbasedsoftware} approach, which has a simpler, fixed workflow of localizing the files to edit followed by repair, performs competitively on SWE-bench.
+These approaches do not expend much efforts in gathering codebase-wide, global context.
+In our setting, the bugs are described by stack traces which are devoid of natural language hints and contain a much larger number of files and functions than an issue description.
+Due to the nature of crash reports and the complex global interactions in large systems codebases, multi-step reasoning and context gathering become important.
+
+Automating such complex tasks in systems codebases requires a different type of agents, agents that can \emph{research} about many pieces of context, derived automatically from the large codebase and its massive commit history, \emph{before} making changes.
+Recently, \emph{deep research} agents have been developed to solve complex, knowledge-intensive problems that require careful context gathering and multi-step reasoning, before synthesizing the answer. The agents and techniques have mostly focused on long-form document generation or complex question-answering over web contents~\citep{shao2024assisting,openaidr,geminidr,perplexitydr,li2025webthinker,wu2025unfolding} and enterprise data~\citep{anthropicdr,microsoftdr}.
+Inspired by these advances, we propose the first deep research agent for code, called \cresearcher{}, and apply it to the problem of generating patches for mitigating crashes reported in systems code.
+
+
+As shown in Figure~\ref{fig:design}, \cresearcher{} works in three phases:
+(1) \analysisphase: Starting with the crash report and the codebase, this phase performs multi-step reasoning over semantics, patterns, and commit history of code. The ``Reasoning Strategies'' block shows the reasoning strategies used. Each reasoning step is followed by invocations of tools (labeled ``Actions'' in Figure~\ref{fig:design}) to gather context over the codebase and its commit history. The information gathered is stored in a context memory and when the agent is able to conclude that it has gathered sufficient context, it moves to the next phase.
+(2) \synthesisphase: The \synthesisphase phase uses the crash report, the context memory, and the reasoning trace of the \analysisphase{} phase to filter out irrelevant memory contents. Then, it generates patches, which may edit one or more buggy code snippets from memory, possibly spread across multiple files.
+(3) \validationphase: Finally, the \validationphase phase checks if the generated patches prevent the crash from occurring using external tools. A successful patch is presented to the user.
+
+We evaluate the effectiveness of \cresearcher{} on the \kbenchsyz{} benchmark~\citep{kgym}, containing $279$ Linux kernel crashes detected by the Syzkaller fuzzer~\citep{syzkaller}.
+This benchmark is challenging because the Linux kernel~\citep{linux} is a canonical example of a systems codebase with complex low-level code and massive size ($75$K files and $28$M lines of code), and has rich development history.
+\cresearcher{} resolves $48\%$ of crashes using GPT-4o and $5$ sampled patches, significantly outperforming the two strong and popular baselines of SWE-agent~\citep{yang2024sweagentagentcomputerinterfacesenable} ($31.5\%$) and Agentless~\citep{xia2024agentlessdemystifyingllmbasedsoftware} ($31\%$) in the same setting (and customized for the kernel crash resolution task).
+A concurrent work, CrashFixer~\citep{crashfixer}, explores a simpler setting where the agent is provided the ground-truth buggy files to edit (the \emph{assisted} setting), whereas, \cresearcher{} takes only the crash report as input (the \emph{unassisted} setting).
+
+
+\cresearcher{} benefits from scaling inference compute, reaching $54\%$ with pass@10, and is robust to the choice of model, resolving $67\%$ of crashes with the newer Gemini 2.5-Flash LLM.
+It gathers context of high coverage and quality, exploring about $10$ files per trajectory compared to a much smaller number $1.33$ of files explored by SWE-agent. 
+We demonstrate the importance of causal analysis over historical commits, a novel feature of \cresearcher{}.
+To ensure that the proposed patches do not break existing functionality, we run Linux kernel unit tests on \cresearcher{}'s crash-resolving patches. Though expensive to run, this provides additional validation beyond the crash-reproduction testing in \kbenchsyz{}.
+We give evidence of the generalizability of \cresearcher{} by experimenting on an open-source multimedia software, \ffmpeg{}~\citep{ffmpeg}, where it resolves $7/10$ crashes tested.
+
+In summary, we make the following main contributions:\\
+\textbf{(1)} We design the first deep research agent for code, \cresearcher{}, capable of handling large systems code and resolving crashes. Recognizing the importance of commit history in systems code, we equip the agent with a tool to efficiently search over commit histories.\\
+\textbf{(2)} We evaluate \cresearcher{} on the challenging \kbenchsyz{} benchmark~\citep{kgym} and achieve a crash resolution rate of $54\%$, 
+outperforming strong baselines and showing robust performance across model choices, reaching $67\%$ with the newer Gemini 2.5-Flash model.
+We also demonstrate its generalizability through experiments on a multimedia software, FFmpeg.\\
+\textbf{(3)} Through a comprehensive evaluation, we show (i) how our deep research agent outperforms agents that do not focus on gathering relevant context, (ii) that this advantage persists even if the existing SOTA agent is given higher inference-time compute, and (iii) that reasoning models improve performance significantly if given well-researched context. We thoroughly validate \cresearcher{}'s crash-resolving patches using the Linux kernel unit test-suite in addition to the validation setup in \kbenchsyz{}, providing confidence that they do not break existing functionality. Further ablations show the importance of (i) causal analysis over historical commits and (ii) memory filtering.

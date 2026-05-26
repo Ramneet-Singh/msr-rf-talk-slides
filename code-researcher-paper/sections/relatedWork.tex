@@ -1,0 +1,22 @@
+\section{Related work}
+\label{sec:related}
+The LLM-powered software development subfield has produced several coding agents~\citep{yang2024sweagentagentcomputerinterfacesenable, xia2024agentlessdemystifyingllmbasedsoftware, openhands, autocoderover, wadhwa2024masai}, predominantly evaluated on SWE-bench~\citep{jimenez2024swebench}. SWE-bench focuses on GitHub issues from small to medium-sized Python repositories. However, systems code, the focus of our work, presents unique challenges.
+We highlight and contrast key related work in this context. 
+A related, but orthogonal line of exploration is long context reasoning. But it has its own challenges, as discussed in Appendix~\ref{app:long-context}.
+
+\textbf{Coding agents}
+Agents like SWE-agent~\citep{yang2024sweagentagentcomputerinterfacesenable} or OpenHands~\citep{openhands} use a single ReAct-style~\citep{yao2023react} loop endowed with shell commands or specialized tools for file navigation and editing. 
+However, they tend to explore a small number of files per bug, without gathering and reasoning over the relevant codebase-wide context.
+AutoCodeRover~\citep{autocoderover} uses tools based on program structure to traverse the codebase (albeit limited to Python code).
+It performs explicit localization of the functions/classes to edit using these tools, and those are later repaired.
+\cresearcher{} does not explicitly localize the functions to edit; instead it gathers relevant context for patch generation and decides what to edit in the \synthesisphase phase.
+Some recent coding agents construct a dependency graph of the repository~\citep{repograph,locagent}, which they then explore using approaches like MCTS~\citep{lingma}. However, such agents are (1) limited to Python code and (2) scale very poorly, making it impractical to use on codebases of the scale of the Linux kernel. \cresearcher{} instead uses simple and scalable tooling to handle such codebases easily.
+\cresearcher{} is also the first agent to use causal analysis over historical commits; this is critical to handling subtle bugs introduced by code evolution in long-lived systems codebases.
+
+\textbf{Deep research agents} Deep research is a fast emerging subfield in agentic AI \citep{microsoftdr,openaidr,geminidr,perplexitydr}, to tackle complex, knowledge-intensive tasks, that can take hours or days even for experts. Academic work so far has focussed on long-form document generation \citep{godbole2024analysis,shao2024assisting}, scientific literature review \citep{wu2025unfolding,gottweis2025towards}, and complex question-answering \citep{li2025webthinker,wu2025agentic} based on the web corpus. The key challenges in deep research for such complex tasks include (a) intent disambiguation, (b) exploring multiple solution paths (breadth of exploration), (c) deep exploration (iterative tool interactions and reasoning), and (d) grounding (ensuring that the claims in the response are properly attributed). Most of the aforementioned challenges also apply to our setting. To the best of our knowledge, our work is the first to design and evaluate a deep research strategy for complex bug resolution in large codebases. Most recently, OpenAI's Deep Research model has been integrated with GitHub repos for report generation and QA over codebases \citep{OpenAIDRGH}. However, (a) it does not support agentic tasks like bug fixing, and
+(b) their indexing technique does not scale to very large codebases like the Linux kernel, whereas we use scalable tools for search.
+
+\textbf{Automated kernel bug detection and repair} Prior work for detecting Linux kernel bugs includes various types of sanitizers, e.g., Kernel Address Sanitizer (KASAN)~\citep{kasan}, and the Syzkaller kernel fuzzer~\citep{syzkaller}, an unsupervised coverage-guided fuzzer that tries to find inputs to crash the kernel. 
+\cresearcher{}, complementary to this, generates patches from crash reports.
+We use some traditional software engineering concepts like deviant pattern detection \citep{deviant} and reachability analysis~\citep{nielson2015principles}, but leverage LLMs to scale to large codebases.
+As noted earlier, CrashFixer~\citep{crashfixer} targets Linux kernel crashes but assumes that buggy files are known \emph{a priori}. This assumption is unrealistic for large codebases like the Linux kernel. In contrast, \cresearcher{} autonomously locates buggy files using general search tools.

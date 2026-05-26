@@ -1,0 +1,318 @@
+\begin{thebibliography}{44}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Anthropic(2025)]{anthropicdr}
+Anthropic.
+\newblock Claude takes research to new places, 2025.
+\newblock URL \url{https://www.anthropic.com/news/research}.
+
+\bibitem[{ccache}()]{ccache}
+{ccache}.
+\newblock ccache.
+\newblock URL \url{https://github.com/ccache/ccache}.
+
+\bibitem[Chen et~al.(2025)Chen, Tang, Deng, Wu, Wu, Jiang, Prasanna, Cohan, and
+  Wang]{locagent}
+Zhaoling Chen, Xiangru Tang, Gangda Deng, Fang Wu, Jialong Wu, Zhiwei Jiang,
+  Viktor Prasanna, Arman Cohan, and Xingyao Wang.
+\newblock Locagent: Graph-guided llm agents for code localization.
+\newblock \emph{arXiv preprint arXiv:2503.09089}, 2025.
+
+\bibitem[Engler et~al.(2001)Engler, Chen, Hallem, Chou, and Chelf]{deviant}
+Dawson Engler, David~Yu Chen, Seth Hallem, Andy Chou, and Benjamin Chelf.
+\newblock Bugs as deviant behavior: a general approach to inferring errors in
+  systems code.
+\newblock \emph{SIGOPS Oper. Syst. Rev.}, 35\penalty0 (5):\penalty0 57–72,
+  October 2001.
+\newblock ISSN 0163-5980.
+\newblock \doi{10.1145/502059.502041}.
+\newblock URL \url{https://doi.org/10.1145/502059.502041}.
+
+\bibitem[FFmpeg(2025)]{ffmpeg}
+FFmpeg.
+\newblock Ffmpeg, 2025.
+\newblock URL \url{https://ffmpeg.org/}.
+
+\bibitem[Godbole et~al.(2024)Godbole, Monath, Kim, Rawat, McCallum, and
+  Zaheer]{godbole2024analysis}
+Ameya Godbole, Nicholas Monath, Seungyeon Kim, Ankit~Singh Rawat, Andrew
+  McCallum, and Manzil Zaheer.
+\newblock Analysis of plan-based retrieval for grounded text generation.
+\newblock \emph{arXiv preprint arXiv:2408.10490}, 2024.
+
+\bibitem[{Google}()]{ossfuzz}
+{Google}.
+\newblock Oss-fuzz | documentation for oss-fuzz.
+\newblock URL \url{https://google.github.io/oss-fuzz/}.
+
+\bibitem[Google(2025{\natexlab{a}})]{geminidr}
+Google.
+\newblock Gemini deep research, 2025{\natexlab{a}}.
+\newblock URL \url{https://gemini.google/overview/deep-research}.
+
+\bibitem[Google(2025{\natexlab{b}})]{google-long-context-docs}
+Google.
+\newblock Generative ai | documentation | long context.
+\newblock
+  \url{https://cloud.google.com/vertex-ai/generative-ai/docs/long-context},
+  2025{\natexlab{b}}.
+\newblock Accessed: 2025-03-13.
+
+\bibitem[Google(2025{\natexlab{c}})]{google-long-context-docs-gemini2.5}
+Google.
+\newblock Generative ai | documentation | gemini 2.5 pro.
+\newblock
+  \url{https://cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/2-5-pro},
+  2025{\natexlab{c}}.
+\newblock Accessed: 2025-05-16.
+
+\bibitem[{Google}(2025{\natexlab{a}})]{kasan}
+{Google}.
+\newblock Kasan, 2025{\natexlab{a}}.
+\newblock URL
+  \url{https://github.com/google/kernel-sanitizers/blob/master/KASAN.md}.
+
+\bibitem[{Google}(2025{\natexlab{b}})]{syzkaller}
+{Google}.
+\newblock Syzkaller, 2025{\natexlab{b}}.
+\newblock URL \url{https://github.com/google/syzkaller/}.
+
+\bibitem[Gottweis et~al.(2025)Gottweis, Weng, Daryin, Tu, Palepu, Sirkovic,
+  Myaskovsky, Weissenberger, Rong, Tanno, et~al.]{gottweis2025towards}
+Juraj Gottweis, Wei-Hung Weng, Alexander Daryin, Tao Tu, Anil Palepu, Petar
+  Sirkovic, Artiom Myaskovsky, Felix Weissenberger, Keran Rong, Ryutaro Tanno,
+  et~al.
+\newblock Towards an ai co-scientist.
+\newblock \emph{arXiv preprint arXiv:2502.18864}, 2025.
+
+\bibitem[Guo et~al.(2023)Guo, Xu, Duan, Yin, and McAuley]{longcoder}
+Daya Guo, Canwen Xu, Nan Duan, Jian Yin, and Julian McAuley.
+\newblock Longcoder: A long-range pre-trained language model for code
+  completion.
+\newblock In \emph{International Conference on Machine Learning}, pp.\
+  12098--12107. PMLR, 2023.
+
+\bibitem[Jain et~al.(2024)Jain, Han, Gu, Li, Yan, Zhang, Wang, Solar-Lezama,
+  Sen, and Stoica]{jain2024livecodebench}
+Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida
+  Wang, Armando Solar-Lezama, Koushik Sen, and Ion Stoica.
+\newblock Livecodebench: Holistic and contamination free evaluation of large
+  language models for code.
+\newblock \emph{arXiv preprint arXiv:2403.07974}, 2024.
+
+\bibitem[Jain et~al.(2025)Jain, Singh, Shetty, Zhang, Zheng, Sen, and
+  Stoica]{regym}
+Naman Jain, Jaskirat Singh, Manish Shetty, Tianjun Zhang, Liang Zheng, Koushik
+  Sen, and Ion Stoica.
+\newblock R2e-gym: Procedural environment generation and hybrid verifiers for
+  scaling open-weights {SWE} agents.
+\newblock In \emph{Second Conference on Language Modeling}, 2025.
+\newblock URL \url{https://openreview.net/forum?id=7evvwwdo3z}.
+
+\bibitem[Jimenez et~al.(2024)Jimenez, Yang, Wettig, Yao, Pei, Press, and
+  Narasimhan]{jimenez2024swebench}
+Carlos~E Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir
+  Press, and Karthik~R Narasimhan.
+\newblock {SWE}-bench: Can language models resolve real-world github issues?
+\newblock In \emph{The Twelfth International Conference on Learning
+  Representations}, 2024.
+\newblock URL \url{https://openreview.net/forum?id=VTF8yNQM66}.
+
+\bibitem[Li et~al.(2024)Li, Zhang, Do, Yue, and Chen]{longicl}
+Tianle Li, Ge~Zhang, Quy~Duc Do, Xiang Yue, and Wenhu Chen.
+\newblock Long-context llms struggle with long in-context learning.
+\newblock \emph{arXiv preprint arXiv:2404.02060}, 2024.
+
+\bibitem[Li et~al.(2025)Li, Jin, Dong, Qian, Zhu, Wu, Wen, and
+  Dou]{li2025webthinker}
+Xiaoxi Li, Jiajie Jin, Guanting Dong, Hongjin Qian, Yutao Zhu, Yongkang Wu,
+  Ji-Rong Wen, and Zhicheng Dou.
+\newblock Webthinker: Empowering large reasoning models with deep research
+  capability.
+\newblock \emph{arXiv preprint arXiv:2504.21776}, 2025.
+
+\bibitem[{Linux}(2025)]{kunit}
+{Linux}.
+\newblock Kunit - linux kernel unit testing, 2025.
+\newblock URL
+  \url{https://www.kernel.org/doc/html/latest/dev-tools/kunit/index.html}.
+
+\bibitem[Liu et~al.(2024)Liu, Lin, Hewitt, Paranjape, Bevilacqua, Petroni, and
+  Liang]{lost-in-the-middle}
+Nelson~F Liu, Kevin Lin, John Hewitt, Ashwin Paranjape, Michele Bevilacqua,
+  Fabio Petroni, and Percy Liang.
+\newblock Lost in the middle: How language models use long contexts.
+\newblock \emph{Transactions of the Association for Computational Linguistics},
+  12:\penalty0 157--173, 2024.
+
+\bibitem[Ma et~al.(2025)Ma, Yang, Cao, Li, Huang, and Li]{lingma}
+Yingwei Ma, Qingping Yang, Rongyu Cao, Binhua Li, Fei Huang, and Yongbin Li.
+\newblock Alibaba lingmaagent: Improving automated issue resolution via
+  comprehensive repository exploration.
+\newblock In \emph{Proceedings of the 33rd ACM International Conference on the
+  Foundations of Software Engineering}, pp.\  238--249, 2025.
+
+\bibitem[Mathai et~al.(2024)Mathai, Huang, Maniatis, Nogikh, Ivan{\v{c}}i{\'c},
+  Yang, and Ray]{kgym}
+Alex Mathai, Chenxi Huang, Petros Maniatis, Aleksandr Nogikh, Franjo
+  Ivan{\v{c}}i{\'c}, Junfeng Yang, and Baishakhi Ray.
+\newblock Kgym: A platform and dataset to benchmark large language models on
+  linux kernel crash resolution.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  37:\penalty0 78053--78078, 2024.
+
+\bibitem[Mathai et~al.(2025)Mathai, Huang, Ma, Kim, Mitchell, Nogikh, Maniatis,
+  Ivan{\v{c}}i{\'c}, Yang, and Ray]{crashfixer}
+Alex Mathai, Chenxi Huang, Suwei Ma, Jihwan Kim, Hailie Mitchell, Aleksandr
+  Nogikh, Petros Maniatis, Franjo Ivan{\v{c}}i{\'c}, Junfeng Yang, and
+  Baishakhi Ray.
+\newblock Crashfixer: A crash resolution agent for the linux kernel.
+\newblock \emph{arXiv preprint arXiv:2504.20412}, 2025.
+
+\bibitem[Microsoft(2025)]{microsoftdr}
+Microsoft.
+\newblock Introducing researcher and analyst in microsoft 365 copilot, 2025.
+\newblock URL
+  \url{https://www.microsoft.com/en-us/microsoft-365/blog/2025/03/25/introducing-researcher-and-analyst-in-microsoft-365-copilot/}.
+
+\bibitem[Nielson et~al.(2015)Nielson, Nielson, and
+  Hankin]{nielson2015principles}
+Flemming Nielson, Hanne~R Nielson, and Chris Hankin.
+\newblock \emph{Principles of program analysis}.
+\newblock springer, 2015.
+
+\bibitem[{OpenAI}(2024{\natexlab{a}})]{gpt4o}
+{OpenAI}.
+\newblock Introducing openai o1-preview, 2024{\natexlab{a}}.
+\newblock URL \url{https://openai.com/index/hello-gpt-4o/}.
+
+\bibitem[{OpenAI}(2024{\natexlab{b}})]{o1}
+{OpenAI}.
+\newblock Introducing openai o1-preview, 2024{\natexlab{b}}.
+\newblock URL \url{https://openai.com/index/introducing-openai-o1-preview/}.
+
+\bibitem[OpenAI(2025{\natexlab{a}})]{OpenAIDRGH}
+OpenAI.
+\newblock Openai deep research integration with github, 2025{\natexlab{a}}.
+\newblock URL
+  \url{https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt-deep-research}.
+
+\bibitem[OpenAI(2025{\natexlab{b}})]{openaidr}
+OpenAI.
+\newblock Introducing deep research, 2025{\natexlab{b}}.
+\newblock URL \url{https://openai.com/index/introducing-deep-research/}.
+
+\bibitem[Ouyang et~al.(2025)Ouyang, Yu, Ma, Xiao, Zhang, Jia, Han, Zhang, and
+  Yu]{repograph}
+Siru Ouyang, Wenhao Yu, Kaixin Ma, Zilin Xiao, Zhihan Zhang, Mengzhao Jia,
+  Jiawei Han, Hongming Zhang, and Dong Yu.
+\newblock Repograph: Enhancing {AI} software engineering with repository-level
+  code graph.
+\newblock In \emph{The Thirteenth International Conference on Learning
+  Representations}, 2025.
+\newblock URL \url{https://openreview.net/forum?id=dw9VUsSHGB}.
+
+\bibitem[Perplexity(2025)]{perplexitydr}
+Perplexity.
+\newblock Introducing perplexity deep research, 2025.
+\newblock URL
+  \url{https://www.perplexity.ai/de/hub/blog/introducing-perplexity-deep-research}.
+
+\bibitem[Shao et~al.(2024)Shao, Jiang, Kanell, Xu, Khattab, and
+  Lam]{shao2024assisting}
+Yijia Shao, Yucheng Jiang, Theodore~A Kanell, Peter Xu, Omar Khattab, and
+  Monica~S Lam.
+\newblock Assisting in writing wikipedia-like articles from scratch with large
+  language models.
+\newblock \emph{arXiv preprint arXiv:2402.14207}, 2024.
+
+\bibitem[Team et~al.(2024)Team, Georgiev, Lei, Burnell, Bai, Gulati, Tanzer,
+  Vincent, Pan, Wang, et~al.]{google-long-context}
+Gemini Team, Petko Georgiev, Ving~Ian Lei, Ryan Burnell, Libin Bai, Anmol
+  Gulati, Garrett Tanzer, Damien Vincent, Zhufeng Pan, Shibo Wang, et~al.
+\newblock Gemini 1.5: Unlocking multimodal understanding across millions of
+  tokens of context.
+\newblock \emph{arXiv preprint arXiv:2403.05530}, 2024.
+
+\bibitem[Torvalds(1991)]{linux}
+Linus Torvalds.
+\newblock Linux, 1991.
+\newblock URL \url{https://github.com/torvalds/linux}.
+
+\bibitem[{universal-ctags}()]{ctags}
+{universal-ctags}.
+\newblock ctags.
+\newblock URL \url{https://github.com/universal-ctags/ctags}.
+
+\bibitem[Wadhwa et~al.(2024)Wadhwa, Sonwane, Arora, Mehrotra, Utpala, Bairi,
+  Kanade, and Natarajan]{wadhwa2024masai}
+Nalin Wadhwa, Atharv Sonwane, Daman Arora, Abhav Mehrotra, Saiteja Utpala,
+  Ramakrishna~B Bairi, Aditya Kanade, and Nagarajan Natarajan.
+\newblock {MASAI}: Modular architecture for software-engineering {AI} agents.
+\newblock In \emph{NeurIPS 2024 Workshop on Open-World Agents}, 2024.
+\newblock URL \url{https://openreview.net/forum?id=NSINt8lLYB}.
+
+\bibitem[Wang et~al.(2025)Wang, Li, Song, Xu, Tang, Zhuge, Pan, Song, Li,
+  Singh, Tran, Li, Ma, Zheng, Qian, Shao, Muennighoff, Zhang, Hui, Lin,
+  Brennan, Peng, Ji, and Neubig]{openhands}
+Xingyao Wang, Boxuan Li, Yufan Song, Frank~F. Xu, Xiangru Tang, Mingchen Zhuge,
+  Jiayi Pan, Yueqi Song, Bowen Li, Jaskirat Singh, Hoang~H. Tran, Fuqiang Li,
+  Ren Ma, Mingzhang Zheng, Bill Qian, Yanjun Shao, Niklas Muennighoff, Yizhe
+  Zhang, Binyuan Hui, Junyang Lin, Robert Brennan, Hao Peng, Heng Ji, and
+  Graham Neubig.
+\newblock Openhands: An open platform for {AI} software developers as
+  generalist agents.
+\newblock In \emph{The Thirteenth International Conference on Learning
+  Representations}, 2025.
+\newblock URL \url{https://openreview.net/forum?id=OJd3ayDDoF}.
+
+\bibitem[Wu et~al.(2025{\natexlab{a}})Wu, Zhu, and Liu]{wu2025agentic}
+Junde Wu, Jiayuan Zhu, and Yuyuan Liu.
+\newblock Agentic reasoning: Reasoning llms with tools for the deep research.
+\newblock \emph{arXiv preprint arXiv:2502.04644}, 2025{\natexlab{a}}.
+
+\bibitem[Wu et~al.(2025{\natexlab{b}})Wu, Huang, Jiang, Xie, Huang, and
+  Zhao]{wu2025unfolding}
+Weiqi Wu, Shen Huang, Yong Jiang, Pengjun Xie, Fei Huang, and Hai Zhao.
+\newblock Unfolding the headline: Iterative self-questioning for news retrieval
+  and timeline summarization.
+\newblock \emph{arXiv preprint arXiv:2501.00888}, 2025{\natexlab{b}}.
+
+\bibitem[Xia et~al.(2024)Xia, Deng, Dunn, and
+  Zhang]{xia2024agentlessdemystifyingllmbasedsoftware}
+Chunqiu~Steven Xia, Yinlin Deng, Soren Dunn, and Lingming Zhang.
+\newblock Agentless: Demystifying llm-based software engineering agents, 2024.
+\newblock URL \url{https://arxiv.org/abs/2407.01489}.
+
+\bibitem[Yang et~al.(2024)Yang, Jimenez, Wettig, Lieret, Yao, Narasimhan, and
+  Press]{yang2024sweagentagentcomputerinterfacesenable}
+John Yang, Carlos~E Jimenez, Alexander Wettig, Kilian Lieret, Shunyu Yao,
+  Karthik Narasimhan, and Ofir Press.
+\newblock Swe-agent: Agent-computer interfaces enable automated software
+  engineering.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  37:\penalty0 50528--50652, 2024.
+
+\bibitem[Yao et~al.(2023)Yao, Zhao, Yu, Du, Shafran, Narasimhan, and
+  Cao]{yao2023react}
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+  and Yuan Cao.
+\newblock React: Synergizing reasoning and acting in language models.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2023.
+
+\bibitem[Zhang et~al.(2024)Zhang, Ruan, Fan, and Roychoudhury]{autocoderover}
+Yuntong Zhang, Haifeng Ruan, Zhiyu Fan, and Abhik Roychoudhury.
+\newblock Autocoderover: Autonomous program improvement.
+\newblock In \emph{Proceedings of the 33rd ACM SIGSOFT International Symposium
+  on Software Testing and Analysis}, ISSTA 2024, pp.\  1592–1604, New York,
+  NY, USA, 2024. Association for Computing Machinery.
+\newblock ISBN 9798400706127.
+\newblock \doi{10.1145/3650212.3680384}.
+\newblock URL \url{https://doi.org/10.1145/3650212.3680384}.
+
+\end{thebibliography}
